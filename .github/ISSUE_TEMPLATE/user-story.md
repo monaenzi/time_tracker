@@ -7,34 +7,24 @@ assignees: ''
 
 ---
 
-## 1. The Story
+## 1. Die Story
 
-**As a** [User, e.g., Boss, Driver], **I want** [Goal, e.g., to be able to reset my password], **so that** [Reason/Benefit, e.g., I can regain access to my account].
+Als User ..., sodass ... 
 
 ---
 
 ## 2. Definition of Done
 
-*What must be verifiable and true for this entire User Story to be considered complete and ready for release?*
 
-- [ ] The feature is functional in all supported browsers/environments.
+*Was muss für diese User Story gelten, damit sie als "fertiggestellt" gilt und bereit zum Release ist.*
+
+- [ ] The feature is functional in all supported browsers.
 - [ ] All data input is validated on the client and server side.
-- [ ] User feedback (e.g., success messages, error handling) is clear and accessible.
-- [ ] All integration tests related to this feature are passing.
-- [ ] The feature meets performance requirements (e.g., loading time < 2s).
 
-## 3. Sub-Tasks / Technical Breakdown
+## 3. Sub-Tasks
 
-*Break the story down into the necessary technical work items. Convert these checklist items into individual Sub-Task Issues that will move across the Kanban board.*
+*Herunterbrechen der User Story in kleine, notwendige Sub-Tasks.*
 
-- [ ] Backend: Implement API endpoint for action X
-- [ ] Database: Create or update necessary schema/migrations
-- [ ] Frontend: Develop and style the user interface (UI) components
-- [ ] Testing: Write E2E tests for the primary user flow
-- [ ] Infrastructure: Update relevant configurations (e.g., environment variables)
+- [ ] Frontend: Implement API endpoint for action X
 
-## 4. References & Documentation
 
-*Links to relevant resources (design mockups, external documentation, related tickets).*
-
-- **Figma Mockup:** [URL]
