@@ -14,10 +14,29 @@ def parse_csv(filename):
     """Parse the CSV file and return a list of user stories."""
     user_stories = []
     
-    with open(filename, 'r', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            user_stories.append(row)
+    try:
+        with open(filename, 'r', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row_num, row in enumerate(reader, start=2):  # start at 2 to account for header
+                # Validate required fields
+                required_fields = ['Title', 'Body', 'Labels', 'Sprint', 'Priority']
+                missing_fields = [field for field in required_fields if not row.get(field, '').strip()]
+                
+                if missing_fields:
+                    print(f"Warning: Row {row_num} is missing required fields: {', '.join(missing_fields)}")
+                    continue
+                
+                user_stories.append(row)
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found!")
+        print(f"Please ensure {filename} exists in the current directory.")
+        sys.exit(1)
+    except csv.Error as e:
+        print(f"Error parsing CSV file: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Unexpected error reading CSV file: {e}")
+        sys.exit(1)
     
     return user_stories
 
@@ -26,9 +45,18 @@ def format_issue_body(story):
     """Format the issue body with additional metadata."""
     body = story['Body']
     
+    # Validate Sprint and Priority values
+    sprint = story.get('Sprint', '').strip()
+    priority = story.get('Priority', '').strip()
+    
+    if not sprint:
+        sprint = "Not specified"
+    if not priority:
+        priority = "Not specified"
+    
     # Add Sprint and Priority metadata at the end
-    body += f"\n\n---\n\n**Sprint:** {story['Sprint']}\n"
-    body += f"**Priority:** {story['Priority']}\n"
+    body += f"\n\n---\n\n**Sprint:** {sprint}\n"
+    body += f"**Priority:** {priority}\n"
     
     return body
 
@@ -39,9 +67,13 @@ def create_issue(story, dry_run=False):
     body = format_issue_body(story)
     labels = story['Labels']
     
-    # Add Sprint and Priority as labels too
-    sprint_label = story['Sprint'].replace(' ', '-').lower()
-    priority_label = story['Priority'].lower()
+    # Add Sprint and Priority as labels too (with validation)
+    sprint = story.get('Sprint', '').strip()
+    priority = story.get('Priority', '').strip()
+    
+    # Generate label-safe versions
+    sprint_label = sprint.replace(' ', '-').lower() if sprint else 'no-sprint'
+    priority_label = priority.lower() if priority else 'no-priority'
     all_labels = f"{labels},{sprint_label},{priority_label}"
     
     cmd = [

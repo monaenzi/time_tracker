@@ -26,8 +26,19 @@ if ! git rev-parse --git-dir > /dev/null 2>&1; then
     exit 1
 fi
 
+# Check if Python 3 is installed
+if ! command -v python3 &> /dev/null; then
+    echo "Error: Python 3 is not installed."
+    echo "Please install Python 3 from: https://www.python.org/"
+    exit 1
+fi
+
 # Run the Python script
 echo "Starting user story import..."
 echo ""
 
-python3 import-user-stories.py "$@"
+if ! python3 import-user-stories.py "$@"; then
+    echo ""
+    echo "Error: Import script failed. Please check the error messages above."
+    exit 1
+fi
