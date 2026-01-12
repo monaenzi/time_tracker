@@ -1,0 +1,91 @@
+Title,Body,Labels,Sprint,Priority
+Übersicht nach App-Start anzeigen,"Als Nutzer möchte ich nach dem Öffnen der App eine Übersicht sehen, damit ich die wichtigsten Informationen (z. B. Status/Summe/letzte Änderung) auf einen Blick erkenne.
+
+Akzeptanzkriterien:
+- Startseite zeigt Überblicksdaten.
+- Layout ist konsistent und bedienbar.","user-story,ui",Sprint 1,P1
+Liste von Zeiteinträgen anzeigen,"Als Nutzer möchte ich eine Liste von Einträgen sehen, aus der ich einen Eintrag auswählen kann.
+
+Akzeptanzkriterien:
+- Liste rendert vorhandene Einträge.
+- Eintrag ist auswählbar (Navigation zur Detailansicht).","user-story,core",Sprint 1,P1
+Liste filtern und suchen,"Als Nutzer möchte ich die Liste einschränken können, damit ich Einträge schneller finde.
+
+Akzeptanzkriterien:
+- Filter oder Suche reduziert sichtbare Einträge.
+- Leere Trefferliste wird verständlich angezeigt.","user-story,ui",Sprint 2,P2
+Detailansicht für Eintrag öffnen,"Als Nutzer möchte ich einen Eintrag anklicken und Details sehen.
+
+Akzeptanzkriterien:
+- Klick auf Listeneintrag öffnet Detailansicht.
+- Detailansicht zeigt relevante Felder des Eintrags.","user-story,core",Sprint 1,P1
+Neuen Zeiteintrag erstellen,"Als Nutzer möchte ich neue Einträge anlegen können.
+
+Akzeptanzkriterien:
+- Formular zum Anlegen vorhanden.
+- Pflichtfelder validiert (HTML5 + JS).
+- Erfolgreiches Anlegen aktualisiert Liste/Übersicht.","user-story,crud,validation",Sprint 1,P1
+Zeiteintrag bearbeiten,"Als Nutzer möchte ich einen Eintrag ändern können.
+
+Akzeptanzkriterien:
+- Bearbeiten-UI vorhanden.
+- Validierung verhindert Fehleingaben.
+- Änderungen sind nach Reload weiterhin sichtbar.","user-story,crud,persistence",Sprint 1,P1
+Zeiteintrag löschen,"Als Nutzer möchte ich Einträge entfernen können.
+
+Akzeptanzkriterien:
+- Löschen entfernt Eintrag aus Liste/Übersicht.
+- Zustand bleibt nach Reload erhalten.","user-story,crud,persistence",Sprint 1,P1
+Projekt auswählen und Timer starten/stoppen,"Als Nutzer möchte ich ein Projekt auswählen und meine Zeit starten/stoppen.
+
+Akzeptanzkriterien:
+- Projekte sind auswählbar.
+- Start/Stop ändert den Zustand sichtbar im UI.
+- Keine toten Buttons (jede Aktion hat Wirkung).","user-story,timer,core",Sprint 1,P1
+Heutige Arbeitszeit je Projekt anzeigen,"Als Nutzer möchte ich sehen, wie viel Zeit ich heute für ein Projekt gearbeitet habe.
+
+Akzeptanzkriterien:
+- Tages-Summe je Projekt wird angezeigt.
+- Summen aktualisieren sich nach Timer-Stop oder Eintragsänderung.","user-story,reporting",Sprint 2,P2
+Lokale Persistenz für Einträge,"Als Nutzer möchte ich, dass meine Änderungen erhalten bleiben und ich Einträge wiederfinde, wenn ich die Seite neu lade.
+
+Akzeptanzkriterien:
+- Daten werden lokal gespeichert.
+- Nach Reload sind Einträge/Timestamp/Status weiterhin vorhanden.","user-story,persistence",Sprint 1,P1
+Eingaben validieren und Fehleingaben verhindern,"Als Nutzer möchte ich keine Fehl-Eingaben machen können.
+
+Akzeptanzkriterien:
+- Pflichtfelder sind validiert (HTML5 + JS).
+- Fehlermeldungen sind sichtbar und verständlich.","user-story,validation",Sprint 1,P1
+Robuste Fehlerbehandlung im UI,"Als Nutzer möchte ich eine klare Rückmeldung bekommen, wenn etwas nicht funktioniert.
+
+Akzeptanzkriterien:
+- Fehler werden im UI abgefangen und verständlich angezeigt.
+- Keine ungefangenen Fehler im Standardflow.
+- (Falls JSON geladen wird) Ladefehler: Fehlertext + Möglichkeit neu zu laden.","user-story,robustness",Sprint 1,P1
+UI/UX Mindestanforderungen erfüllen,"Als Nutzer möchte ich die App intuitiv bedienen können.
+
+Akzeptanzkriterien:
+- Navigation/Buttons sind erkennbar.
+- Layout konsistent.
+- Grobe Responsiveness: schmaler Screen bleibt nutzbar.","user-story,ui,ux",Sprint 1,P1
+E2E-Tests (Playwright) für Kernflows,"Als Auftraggeber möchte ich sehen, dass wichtige Funktionen getestet sind.
+
+Akzeptanzkriterien:
+- Mind. 3 Playwright E2E-Tests vorhanden.
+- Tests decken ab: (1) Inhalte erscheinen, (2) User-Aktion ändert Zustand (create/edit/status/timer), (3) Persistenz nach Reload.
+- Tests laufen lokal via definierter Command.","user-story,testing,e2e",Sprint 1,P1
+README-Dokumentation für Abgabe,"Als Kunde möchte ich schnell verstehen, was das Produkt kann und wie ich es starte.
+
+Akzeptanzkriterien (README.md):
+- Projektname + kurzer Zweck (2–5 Sätze)
+- Setup & Start (Commands)
+- Sprint-1 Features
+- Playwright Tests ausführen
+- Bekannte Einschränkungen/offene Punkte
+- Teammitglieder","user-story,docs",Sprint 1,P1
+Demo-Flow in <2 Minuten möglich,"Als Team möchte ich eine kurze Demo zeigen können (Überblick → Detail → Änderung → Reload → Änderung bleibt).
+
+Akzeptanzkriterien:
+- App startbar in <2 Minuten (npm install + npm start oder gleichwertig).
+- Demo-Flow funktioniert ohne Workarounds.","user-story,demo",Sprint 1,P2
