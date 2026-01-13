@@ -10,3 +10,6 @@ button {
 input[type="time"] {
   width: 120px;
 }
+input[type="date"] {
+  width: 150px;
+}
