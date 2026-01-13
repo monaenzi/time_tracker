@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8" />
   <title>Zeiterfassung</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="app.js" defer></script>
 </head>
+
 <body>
+  <header></header>
+  <main>
+    <h1>Zeiterfassungs-Mini-Tool</h1>
 
-  <h1>Zeiterfassung</h1>
+    <label for="projects">Wähle ein Projekt:</label>
+    <select id="projects" name="projects">
+      <option value="1">Projekt 1</option>
+      <option value="2">Projekt 2</option>
+      <option value="3">Projekt 3</option>
+      <option value="4">Projekt 4</option>
+    </select>
 
-  <select id="projectSelect"></select>
-  <button id="toggleTimerBtn">Start</button>
+    <div id="activeTimer"></div>
+  </main>
 
-  <div id="activeTimer"></div>
-
-  <h3>Heute</h3>
-  <ul id="todayEntries"></ul>
-  <div id="todaySummary"></div>
-
-  <script src="app.js"></script>
-  
+  <footer></footer>
 </body>
+
 </html>
