@@ -1,15 +1,117 @@
-body {
-  font-family: sans-serif;
-  max-width: 600px;
-  margin: 40px auto;
+:root {
+    --bg-color: #121317;
+    --card-bg: #1c1d22;
+    --text-main: #ffffff;
+    --text-dim: #8e8f94;
+    --accent-blue: #6366f1;
+    --accent-orange: #f59e0b;
+    --divider-color: #2e2f34;
 }
 
-button {
-  margin-left: 8px;
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
 }
-input[type="time"] {
-  width: 120px;
+
+.timer-container {
+    background-color: var(--card-bg);
+    width: 440px;
+    padding: 30px;
+    border-radius: 28px;
+    border: 1px solid var(--divider-color);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
-input[type="date"] {
-  width: 150px;
+
+.current-project-tag {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.time-number {
+    font-size: 110px;
+    font-weight: 200;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.status-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--text-dim);
+    gap: 8px;
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--divider-color);
+    margin: 25px 0;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.custom-select {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    background: #1c1d22;
+    border: 1px solid var(--divider-color);
+    border-radius: 12px;
+    width: 220px;
+    margin-top: 10px;
+    display: none;
+    z-index: 100;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.v-divider {
+    width: 1px;
+    height: 20px;
+    background-color: var(--divider-color);
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); }
+.dot-small { width: 6px; height: 6px; border-radius: 50%; }
+.orange { background: var(--accent-orange); }
+
+/* History Panel */
+.history-panel {
+    margin-top: 20px;
+    width: 440px;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid var(--divider-color);
 }

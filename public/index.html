@@ -1,30 +1,63 @@
 <!DOCTYPE html>
 <html lang="de">
-
 <head>
-  <meta charset="UTF-8" />
-  <title>Zeiterfassung</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="app.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Timer 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="main.js" defer></script>
+    
 </head>
-
 <body>
-  <header></header>
-  <main>
-    <h1>Zeiterfassungs-Mini-Tool</h1>
+    <div class="timer-container">
+        <div class="main-display">
+            <div class="current-project-tag">
+                <span class="dot" id="tagDot"></span>
+                <span id="activeProjectName">DEEP WORK</span> 
+            </div>
+            <div class="time-number" id="timerDisplay">00:00</div>
+            <div class="status-label">
+                <span class="dot-small orange"></span>
+                <span id="statusText">Paused</span>
+            </div>
+        </div>
 
-    <label for="projects">Wähle ein Projekt:</label>
-    <select id="projects" name="projects">
-      <option value="1">Projekt 1</option>
-      <option value="2">Projekt 2</option>
-      <option value="3">Projekt 3</option>
-      <option value="4">Projekt 4</option>
-    </select>
+        <div class="divider"></div>
 
-    <div id="activeTimer"></div>
-  </main>
+        <div class="toolbar">
+            <div class="project-selector-wrapper">
+                <div class="custom-select" id="selectTrigger">
+                    <span class="dot blue" id="selectedDot"></span>
+                    <span id="selectedProjectText">Deep Work</span>
+                    <span class="chevron">↕</span>
+                </div>
+                <div class="dropdown-menu" id="projectDropdown">
+                    <div class="search-box">
+                        <input type="text" placeholder="Search or add...">
+                    </div>
+                    <div class="projects-list" id="projectsList">
+                        </div>
+                </div>
+            </div>
 
-  <footer></footer>
+            <div class="v-divider"></div>
+
+            <div class="controls">
+                <button id="startStopBtn" class="icon-btn">▶</button> 
+                <button id="resetBtn" class="icon-btn">↺</button>
+                <div class="v-divider"></div>
+                <button id="historyBtn" class="icon-btn">🕒</button>
+                <div class="v-divider"></div>
+                <button class="icon-btn">🌙</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="historySection" class="history-panel" style="display:none;">
+        <h3>Heute</h3> 
+        <ul id="entryList"></ul>
+        <div class="total">Total: <span id="totalTime">0</span> min</div>
+    </div>
+
 </body>
-
 </html>
