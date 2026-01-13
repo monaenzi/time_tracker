@@ -1,0 +1,12 @@
+body {
+  font-family: sans-serif;
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+button {
+  margin-left: 8px;
+}
+input[type="time"] {
+  width: 120px;
+}
