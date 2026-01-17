@@ -6,7 +6,7 @@ let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];
 
 
 async function fetchProjects() {
-    const res = await fetch('projects.json');
+    const res = await fetch('http://localhost:3000/api/projects');
     const projects = await res.json();
     const list = document.getElementById('projectsList');
     
