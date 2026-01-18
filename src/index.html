@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dark Timer 2026</title>
+    <title>Time Tracker</title>
     <link rel="stylesheet" href="style.css">
-    <script src="js\main.js" defer></script>
-    
+    <script src="js/main.js" defer></script>
 </head>
 <body>
     <div class="timer-container">
@@ -33,22 +32,20 @@
                 </div>
                 <div class="dropdown-menu" id="projectDropdown">
                     <div class="search-box">
-                        <input type="text" placeholder="Search or add...">
+                        <input type="text" id="projectSearch" placeholder="Search or add...">
                     </div>
-                    <div class="projects-list" id="projectsList">
-                        </div>
+                    <div class="projects-list" id="projectsList"></div>
                 </div>
             </div>
 
             <div class="v-divider"></div>
 
             <div class="controls">
-                <button id="startStopBtn" class="icon-btn">▶</button> 
-                <button id="resetBtn" class="icon-btn">↺</button>
+                <button id="startStopBtn" class="icon-btn" title="Start/Stop">▶</button> 
+                <button id="resetBtn" class="icon-btn" title="Reset">↺</button>
                 <div class="v-divider"></div>
-                <button id="historyBtn" class="icon-btn">🕒</button>
+                <button id="historyBtn" class="icon-btn" title="History">🕒<span class="badge" id="historyCount">3</span></button>
                 <div class="v-divider"></div>
-                <button class="icon-btn">🌙</button>
             </div>
         </div>
     </div>
@@ -58,6 +55,5 @@
         <ul id="entryList"></ul>
         <div class="total">Total: <span id="totalTime">0</span> min</div>
     </div>
-
 </body>
 </html>
