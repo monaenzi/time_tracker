@@ -1,5 +1,6 @@
 let selectedProjectId = null;
-let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];    
+let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];
+let projects = []; // Store projects for name lookup    
 
 // ==================== TIMER CLASS ====================
 // Encapsulates all timer-related state and functionality
@@ -190,7 +191,7 @@ async function fetchProjects() {
     }
     
     try {
-        const projects = await fetchProjectsFromServer();
+        projects = await fetchProjectsFromServer(); // Store projects globally
         
         if (!projects || projects.length === 0) {
             throw new Error('No projects available');
@@ -209,6 +210,9 @@ async function fetchProjects() {
             div.onclick = () => selectProject(p);
             DOM.projectsList.appendChild(div);
         });
+        
+        // Re-render history to show project names instead of IDs
+        renderHistory();
     } catch (error) {
         console.error('Error loading projects in selector:', error);
         handleError(error, {
@@ -266,10 +270,31 @@ function toggleHistoryPanel() {
     DOM.historySection.style.display = DOM.historySection.style.display === 'none' ? 'block' : 'none';
 }
 
+// Helper function to get project name by ID
+function getProjectName(projectId) {
+    if (!projectId) return 'Unknown Project';
+    
+    // Convert projectId to number for comparison (handles both string and number IDs)
+    const id = typeof projectId === 'string' ? parseInt(projectId, 10) : projectId;
+    
+    const project = projects.find(p => {
+        const pId = typeof p.id === 'string' ? parseInt(p.id, 10) : p.id;
+        return pId === id;
+    });
+    
+    return project ? project.name : `Project ${projectId}`;
+}
+
 function renderHistory() {
     // Get today's date in YYYY-MM-DD format
     const today = formatDateYYYYMMDD(new Date());
     const todaysData = timeEntries.filter(e => e.date === today);
+    
+    // Debug: Log all entries and today's date for troubleshooting
+    console.log('All entries in localStorage:', timeEntries);
+    console.log("Today's date (filter):", today);
+    console.log("Today's entries (filtered):", todaysData);
+    console.log("Total entries:", timeEntries.length, "| Today's entries:", todaysData.length);
     
     DOM.entryList.innerHTML = '';
     let total = 0;
@@ -277,7 +302,8 @@ function renderHistory() {
         total += e.durationMinutes;
         // Use projectId (camelCase) - handle both formats for compatibility
         const projectId = e.projectId || e.projectid;
-        DOM.entryList.innerHTML += `<li>Project ${projectId}: ${e.durationMinutes} min</li>`;
+        const projectName = getProjectName(projectId);
+        DOM.entryList.innerHTML += `<li>${projectName}: ${e.durationMinutes} min</li>`;
     });
     DOM.totalTime.textContent = total;
 }
@@ -341,16 +367,19 @@ async function populateProjectSelect() {
     }
 
     try {
-        const projects = await fetchProjectsFromServer();
+        const projectsData = await fetchProjectsFromServer();
 
         // Validate projects data
-        if (!Array.isArray(projects) || projects.length === 0) {
+        if (!Array.isArray(projectsData) || projectsData.length === 0) {
             throw new Error('No projects available');
         }
 
         // Clear existing options
         DOM.formProjectId.innerHTML = '<option value="">Select a project...</option>';
 
+        // Store projects globally for name lookup
+        projects = projectsData;
+        
         // Add projects from server
         projects.forEach(project => {
             if (project && project.id && project.name) {
