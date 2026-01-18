@@ -78,6 +78,12 @@ document.getElementById('selectTrigger').onclick = () => {
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 };
 
+// Toggle history panel visibility
+document.getElementById('historyBtn').onclick = () => {
+    const historySection = document.getElementById('historySection');
+    historySection.style.display = historySection.style.display === 'none' ? 'block' : 'none';
+};
+
 function renderHistory() {
     const list = document.getElementById('entryList');
     const today = new Date().toISOString().split('T')[0];
