@@ -3,6 +3,7 @@ let timerInterval;
 let isRunning = false;
 let selectedProjectId = null;
 let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];    
+let elapsedTime = 0;
 
 
 async function fetchProjects() {
@@ -32,23 +33,32 @@ document.getElementById('startStopBtn').onclick = function() {
         if (!selectedProjectId) return alert("Select a project first!");
         startTimer();
     } else {
-        stopTimer();
+        pauseTimer();
     }
 };
 
 function startTimer() {
     isRunning = true;
-    startTime = new Date();
+    startTime = new Date() - (elapsedTime * 1000);
     document.getElementById('startStopBtn').textContent = '⏹';
     document.getElementById('statusText').textContent = 'Running';
     timerInterval = setInterval(updateUI, 1000);
+}
+
+function pauseTimer() {
+    isRunning = false;
+    clearInterval(timerInterval);
+    elapsedTime = Math.floor((new Date() - startTime) / 1000);
+    
+    document.getElementById('startStopBtn').textContent = '▶';
+    document.getElementById('statusText').textContent = 'Paused';
 }
 
 function stopTimer() {
     isRunning = false;
     clearInterval(timerInterval);
     const endTime = new Date();
-    const duration = Math.round((endTime - startTime) / 60000); 
+    const duration = Math.round(elapsedTime / 60);  
 
    
     const entry = {
@@ -60,6 +70,8 @@ function stopTimer() {
     timeEntries.push(entry);
     localStorage.setItem('timeEntries', JSON.stringify(timeEntries));   
     
+    elapsedTime = 0;
+    document.getElementById('timerDisplay').textContent = '00:00';
     document.getElementById('startStopBtn').textContent = '▶';
     document.getElementById('statusText').textContent = 'Paused';
     renderHistory();
@@ -82,6 +94,12 @@ document.getElementById('selectTrigger').onclick = () => {
 document.getElementById('historyBtn').onclick = () => {
     const historySection = document.getElementById('historySection');
     historySection.style.display = historySection.style.display === 'none' ? 'block' : 'none';
+};
+
+document.getElementById('resetBtn').onclick = function() {
+    if (elapsedTime > 0) {
+        stopTimer();
+    }
 };
 
 function renderHistory() {
