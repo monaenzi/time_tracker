@@ -53,11 +53,67 @@
         </div>
     </div>
 
+    <!-- History Section -->
     <div id="historySection" class="history-panel" style="display:none;">
-        <h3>Heute</h3>
+        <div class="history-header"> 
+            <h3>Heute</h3> 
+            <button id="addEntryBtn" class="btn-base add-entry-btn">+ Add Entry</button>
+        </div>
         <ul id="entryList"></ul>
         <div class="total">Total: <span id="totalTime">0</span> min</div>
     </div>
+
+    <!-- Add Entry Modal -->
+    <div id="entryFormModal" class="form-modal" style="display:none;">
+        <div class="form-overlay"></div>
+        <div class="form-container">
+            <div class="form-header">
+                <h3>Create New Time Entry</h3>
+                <button id="closeFormBtn" class="close-btn">x</button>
+            </div>
+
+            <form id="entryForm">
+                <div class="form-group">
+                    <label for="formProjectId">Project</label>
+                    <select id="formProjectId" name="projectId" required>
+                        <option value="">Select Project...</option>
+                        <!-- Projects are loaded from localStorage for privacy -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="formDate">Date</label>
+                    <input 
+                        type="date" 
+                        id="formDate" 
+                        name="date" 
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="formDurationMinutes">Duration (minutes)</label>
+                    <input 
+                        type="number" 
+                        id="formDurationMinutes" 
+                        name="durationMinutes" 
+                        min="1"
+                        step="1"
+                        placeholder="e.g. 30"
+                        required
+                    />
+                </div>
+                <div id="formError" class="error-message" style="display:none;"></div>
+                <div id="formSuccess" class="success-message" style="display:none;"></div>
+
+                <div class="form-actions">
+                    <button type="button" id="cancelFormBtn" class="btn-secondary">Cancel</button>
+                    <button type="submit" id="submitFormBtn" class="btn-base btn-primary">Create Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
 </body>
 
 </html>

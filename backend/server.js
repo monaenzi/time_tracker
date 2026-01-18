@@ -3,7 +3,6 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import cors from "cors";
-import { readFile } from "fs/promises";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,9 +16,21 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Statische Dateien aus dem "public" Ordner bereitstellen
-app.use(express.static(path.join(__dirname)));
+// Serve index.html from src directory FIRST (before static middleware)
+app.get("/", (_, res) => {
+  const indexPath = path.join(__dirname, '..', 'src', 'index.html');
+  console.log('Serving index.html from:', indexPath);
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('Error sending index.html:', err);
+      res.status(500).send('Error loading page');
+    }
+  });
+});
 
+// Statische Dateien aus dem "src" Ordner bereitstellen
+const srcPath = path.join(__dirname, '..', 'src');
+app.use(express.static(srcPath));
 
 app.get(route, (_, res) => {
   try {
@@ -37,11 +48,6 @@ app.get(route, (_, res) => {
       .status(500)
       .send({ error: error, message: "Internal Server Error" });
   }
-});
-
-// Falls jemand direkt auf die API-Route im Browser geht
-app.get("/", (_, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.listen(PORT, () => console.log(timeTracker));
