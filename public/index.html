@@ -53,11 +53,71 @@
         </div>
     </div>
 
+    <!-- History Section -->
+    <!-- 18.01.2026 - NC : Add "Add Entry" button to the history panel -->
     <div id="historySection" class="history-panel" style="display:none;">
-        <h3>Heute</h3> 
+        <div class="history-header"> 
+            <h3>Heute</h3> 
+            <button id="addEntryBtn" class="add-entry-btn">+ Add Entry</button>
+        </div>
         <ul id="entryList"></ul>
         <div class="total">Total: <span id="totalTime">0</span> min</div>
     </div>
 
+    <!-- Add Entry Modal -->
+    <!--START - 18.01.2026 - NC : Add Add Entry Modal -->
+    <div id="addEntryModal" class="form-modal" style="display:none;">
+        <div class="form-overlay"></div>
+        <div class="form-container">
+            <div class="form-header">
+                <h3>Create New Time Entry</h3>
+                <button id="closeModalBtn" class="close-btn">x</button>
+            </div>
+
+            <form id="entryForm">
+                <div class="form-group">
+                    <label for="formProjectId">Project</label>
+                    <select id="formProjectId" name="projectId" required>
+                        <option value="">Select Project...</option>
+                        <!-- 18.01.2026 - NC : Projects will be populated from the server -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="formDate">Date</label>
+                    <input 
+                        type="text" 
+                        id="formDate" 
+                        name="date" 
+                        pattern="\d{2}-\d{2}-\d{4}"
+                        placeholder="DD-MM-YYYY"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="formDurationMinutes">Duration (minutes)</label>
+                    <input 
+                        type="number" 
+                        id="formDurationMinutes" 
+                        name="durationMinutes" 
+                        min="1"
+                        step="1"
+                        placeholder="e.g. 30"
+                        required
+                    />
+                </div>
+                <div id="formError" class="error-message" style="display:none;"></div>
+                <div id="formSuccess" class="success-message" style="display:none;"></div>
+
+                <div class="form-actions">
+                    <button type="button" id="cancelFormBtn" class="btn-secondary">Cancel</button>
+                    <button type="submit" id="submitFormBtn" class="btn-primary">Create Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--END - 18.01.2026 - NC : Add Add Entry Modal -->
+    
 </body>
 </html>

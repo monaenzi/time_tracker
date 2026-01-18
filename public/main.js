@@ -87,7 +87,7 @@ function renderHistory() {
     let total = 0;
     todaysData.forEach(e => {
         total += e.durationMinutes;
-        list.innerHTML += `<li>Project ${e.projectid}: ${e.durationMinutes} min</li>`;
+        list.innerHTML += `<li>Project ${e.projectId}: ${e.durationMinutes} min</li>`;
     });
     document.getElementById('totalTime').textContent = total;
 }
