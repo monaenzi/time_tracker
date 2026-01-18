@@ -1,0 +1,64 @@
+graph LR
+    User[User]
+
+    subgraph "Time Tracking"
+        StartTimer[Start Timer]
+        StopTimer[Stop Timer]
+        ViewTimer[View Timer Display]
+        User --> StartTimer
+        User --> StopTimer
+        User --> ViewTimer
+        StartTimer -.-> StopTimer
+    end
+
+    subgraph "Project Management"
+        SelectProject[Select Project]
+        CreateProject[Create Project]
+        DeleteProject[Delete Project]
+        ViewProjectList[View Project List]
+        User --> SelectProject
+        User --> CreateProject
+        User --> DeleteProject
+        User --> ViewProjectList
+    end
+
+    subgraph "Session History"
+        ViewHistory[View Session History]
+        FilterSessions[Filter Sessions]
+        ExportCSV[Export to CSV]
+        ClearSessions[Clear All Sessions]
+        ViewCharts[View Charts]
+        User --> ViewHistory
+        User --> FilterSessions
+        User --> ExportCSV
+        User --> ClearSessions
+        ViewHistory -.-> FilterSessions
+        ViewHistory -.-> ViewCharts
+    end
+
+    subgraph "Analytics"
+        ViewDistribution[View Project Distribution]
+        ViewDaily[View Daily Activity]
+        ViewTotal[View Total Time]
+        ViewCharts -.-> ViewDistribution
+        ViewCharts -.-> ViewDaily
+        ViewCharts -.-> ViewTotal
+    end
+
+    subgraph "Ambient Mode"
+        ActivateAmbient[Activate Ambient Mode]
+        DeactivateAmbient[Deactivate Ambient Mode]
+        ViewImages[View Ambient Images]
+        User --> ActivateAmbient
+        User --> DeactivateAmbient
+        User --> ViewImages
+        ActivateAmbient -.-> ViewImages
+    end
+
+    subgraph "Data Persistence"
+        SaveStorage[Save to Storage]
+        StartTimer -.-> SaveStorage
+        StopTimer -.-> SaveStorage
+        CreateProject -.-> SaveStorage
+        DeleteProject -.-> SaveStorage
+    end

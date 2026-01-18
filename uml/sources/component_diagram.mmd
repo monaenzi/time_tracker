@@ -1,0 +1,46 @@
+graph TB
+    subgraph "Time Tracker Application"
+        AppComponent[App]
+        TimerModule[Timer Module]
+        ProjectsModule[Projects Module]
+        SessionsModule[Sessions Module]
+        StorageModule[Storage Module]
+        HistoryModal[History Modal]
+        SessionList[Session List]
+        ChartRenderer[Chart Renderer]
+        IdleManager[Idle Manager]
+        EffectsManager[Effects Manager]
+        Utils[Utils]
+    end
+
+    subgraph "Browser APIs"
+        LocalStorage[localStorage]
+        DOM[DOM API]
+        Canvas[Canvas API]
+    end
+
+    subgraph "User Interface"
+        HTML[HTML Elements]
+        CSS[CSS Styles]
+    end
+
+    AppComponent --> TimerModule
+    AppComponent --> ProjectsModule
+    AppComponent --> SessionsModule
+    AppComponent --> HistoryModal
+    AppComponent --> IdleManager
+    AppComponent --> EffectsManager
+
+    TimerModule --> StorageModule
+    ProjectsModule --> StorageModule
+    SessionsModule --> StorageModule
+
+    HistoryModal --> SessionList
+    HistoryModal --> ChartRenderer
+    HistoryModal --> SessionsModule
+
+    ChartRenderer --> Canvas
+    StorageModule --> LocalStorage
+    AppComponent --> DOM
+    AppComponent --> HTML
+    AppComponent --> Utils

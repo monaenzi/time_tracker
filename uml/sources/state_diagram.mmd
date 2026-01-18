@@ -1,0 +1,38 @@
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> AppStates
+
+    state AppStates {
+        [*] --> Initializing
+        Initializing --> Ready : init complete
+        
+        state TimerStates {
+            [*] --> Stopped
+            Stopped --> Running : start()
+            Running --> Stopped : stop()
+            Running --> Running : tick() every second
+        }
+        
+        state AmbientModeStates {
+            [*] --> Normal
+            Normal --> Ambient : enterAmbientMode()<br/>2 min idle or manual
+            Ambient --> Normal : exitAmbientMode()<br/>user activity or manual
+        }
+        
+        Ready --> TimerStates
+        Ready --> AmbientModeStates
+    }
+
+    AppStates --> [*]
+
+    note right of Ambient
+        - UI elements fade out
+        - Background images cycle
+        - Timer remains visible
+    end note
+
+    note right of Running
+        - Updates every second
+        - Persists to localStorage
+        - Survives page reload
+    end note

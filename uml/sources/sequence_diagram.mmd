@@ -1,0 +1,58 @@
+sequenceDiagram
+    actor User
+    participant App
+    participant TimerManager
+    participant ProjectsManager
+    participant SessionsManager
+    participant Storage
+    participant UI
+
+    User->>App: Click Start/Stop Button
+    activate App
+
+    alt Timer is Running
+        App->>TimerManager: stop()
+        activate TimerManager
+        TimerManager->>TimerManager: Calculate endTime
+        TimerManager->>Storage: remove(startTime)
+        TimerManager-->>App: return {startTime, endTime}
+        deactivate TimerManager
+        
+        App->>ProjectsManager: getSelected()
+        activate ProjectsManager
+        ProjectsManager-->>App: return project
+        deactivate ProjectsManager
+        
+        App->>SessionsManager: add(project, startTime, endTime)
+        activate SessionsManager
+        SessionsManager->>SessionsManager: Calculate duration
+        SessionsManager->>Storage: set(sessions)
+        activate Storage
+        Storage->>Storage: Save to localStorage
+        deactivate Storage
+        SessionsManager-->>App: return session
+        deactivate SessionsManager
+        
+        App->>UI: updateTimerDisplay(0)
+        App->>UI: setTimerActiveState(false)
+    else Timer is Stopped
+        App->>TimerManager: start(onTick)
+        activate TimerManager
+        TimerManager->>TimerManager: Set startTime
+        TimerManager->>Storage: set(startTime)
+        activate Storage
+        Storage->>Storage: Save to localStorage
+        deactivate Storage
+        TimerManager->>TimerManager: Start interval
+        TimerManager-->>App: Timer started
+        deactivate TimerManager
+        
+        App->>UI: setTimerActiveState(true)
+        
+        loop Every Second
+            TimerManager->>App: onTick(elapsed)
+            App->>UI: updateTimerDisplay(elapsed)
+        end
+    end
+
+    deactivate App

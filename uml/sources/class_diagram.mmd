@@ -1,0 +1,111 @@
+classDiagram
+    class App {
+        -HistoryModal historyModal
+        -EffectsManager effectsManager
+        -IdleManager idleManager
+        -string[] ambientImages
+        -number currentAmbientIndex
+        -number ambientInterval
+        +constructor()
+        +initElements()
+        +initState()
+        +initEventListeners()
+        +enterAmbientMode()
+        +exitAmbientMode()
+        +toggleAmbientMode()
+        +handleToggleTimer()
+        +updateTimerDisplay(seconds)
+        +updateProjectUI(project)
+        +selectProject(id)
+    }
+
+    class TimerManager {
+        -number startTime
+        -number intervalId
+        -function onTick
+        -boolean isRunning
+        -number elapsed
+        +start(onTick)
+        +stop()
+        +resetState()
+        +tick()
+        +getElapsed()
+    }
+
+    class ProjectsManager {
+        -Project[] projects
+        -string selectedProjectId
+        +getAll()
+        +get(id)
+        +getSelected()
+        +select(id)
+        +add(name)
+        +delete(id)
+        +save()
+    }
+
+    class SessionsManager {
+        -Session[] sessions
+        +getAll()
+        +add(project, startTime, endTime)
+        +delete(id)
+        +clear()
+        +save()
+    }
+
+    class HistoryModal {
+        -HTMLElement dialog
+        -SessionList sessionList
+        -ChartRenderer projectChart
+        -ChartRenderer dailyChart
+        +constructor()
+        +open()
+        +close()
+        +render()
+        +renderCharts(sessions)
+    }
+
+    class SessionList {
+        -HTMLElement container
+        +render(filterDays)
+    }
+
+    class ChartRenderer {
+        -HTMLCanvasElement canvas
+        -CanvasRenderingContext2D ctx
+        -number width
+        -number height
+        +constructor(canvas)
+        +resize()
+        +clear()
+        +drawBarChart(data, labels, colors)
+        +drawDonutChart(data, labels, colors)
+    }
+
+    class IdleManager {
+        -number timeout
+        -number timer
+        -boolean isIdle
+        +start()
+        +stop()
+        +resetTimer()
+    }
+
+    class Storage {
+        <<static>>
+        +get(key, defaultValue)
+        +set(key, value)
+        +remove(key)
+        +clear()
+    }
+
+    App --> TimerManager : uses
+    App --> ProjectsManager : uses
+    App --> SessionsManager : uses
+    App --> HistoryModal : contains
+    App --> IdleManager : contains
+    HistoryModal --> SessionList : contains
+    HistoryModal --> ChartRenderer : uses
+    ProjectsManager --> Storage : uses
+    SessionsManager --> Storage : uses
+    TimerManager --> Storage : uses
