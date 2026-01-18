@@ -1,21 +1,47 @@
 import express from "express";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import cors from "cors";
+import { readFile } from "fs/promises";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const PORT = 3000;
+const route = "/api/projects";
+const timeTracker = `Server running on PORT ${PORT}`;
+const filePath = path.join(__dirname, "projects.json");
 
 const app = express();
-const port = 3000;
-
-//----------------- Step 1: Add JSON Middleware and In-memory data store----------------------------------------
-// Middleware to parse JSON request bodies
 app.use(express.json());
+app.use(cors());
 
-// In-memory data store for time entries
-let timeEntries = [];
+// Statische Dateien aus dem "public" Ordner bereitstellen
+app.use(express.static(path.join(__dirname)));
 
-// Healthcheck
-app.get('/', (req, res) => {
-    res.send('Server is running.');
+
+app.get(route, (_, res) => {
+  try {
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        return res.status(500).send("Error reading projects.json file");
+      }
+
+      const projects = JSON.parse(data);
+      return res.status(200).send(projects);
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .send({ error: error, message: "Internal Server Error" });
+  }
 });
 
-//----------------- Step 2: Add POST endpoint for creating time entries ----------------------------------------
+//----------------- 18.01.2026 - NC : Time Entries API Endpoints ------------------
+// In-memory data store for time entries
+let timeEntries = [];
 
 // POST endpoint for creating time entries
 app.post('/api/time-entries', (req, res) => {
@@ -94,8 +120,6 @@ app.post('/api/time-entries', (req, res) => {
     }
 });
 
-//----------------- Step 3: Add GET endpoint for fetching time entries ----------------------------------------
-
 // GET endpoint for fetching time entries
 app.get('/api/time-entries', (req, res) => {
     try {
@@ -113,9 +137,9 @@ app.get('/api/time-entries', (req, res) => {
     }
 });
 
-// Static files middleware should come after API routes
-app.use(express.static('public'));
-
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+// Falls jemand direkt auf die API-Route im Browser geht
+app.get("/", (_, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
+
+app.listen(PORT, () => console.log(timeTracker));
