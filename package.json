@@ -5,8 +5,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon backend/server.js"
+    "dev": "nodemon backend/server.js",
+    "testui": "playwright test --ui",
+    "test": "playwright test"
   },
   "repository": {
     "type": "git",
@@ -23,5 +24,9 @@
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "nodemon": "^3.1.11"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.9"
   }
 }
