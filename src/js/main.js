@@ -60,10 +60,10 @@ function stopTimer() {
     const endTime = new Date();
     const duration = Math.round(elapsedTime / 60);  
 
-   
+    // Create entry with YYYY-MM-DD date format
     const entry = {
-        projectid: selectedProjectId,
-        date: new Date().toISOString().split('T')[0],
+        projectId: selectedProjectId,  // Use camelCase
+        date: formatDateYYYYMMDD(new Date()),  // YYYY-MM-DD format
         durationMinutes: duration
     };
     
@@ -104,14 +104,17 @@ document.getElementById('resetBtn').onclick = function() {
 
 function renderHistory() {
     const list = document.getElementById('entryList');
-    const today = new Date().toISOString().split('T')[0];
+    // Get today's date in YYYY-MM-DD format
+    const today = formatDateYYYYMMDD(new Date());
     const todaysData = timeEntries.filter(e => e.date === today);
     
     list.innerHTML = '';
     let total = 0;
     todaysData.forEach(e => {
         total += e.durationMinutes;
-        list.innerHTML += `<li>Project ${e.projectId}: ${e.durationMinutes} min</li>`;
+        // Use projectId (camelCase) - handle both formats for compatibility
+        const projectId = e.projectId || e.projectid;
+        list.innerHTML += `<li>Project ${projectId}: ${e.durationMinutes} min</li>`;
     });
     document.getElementById('totalTime').textContent = total;
 }
@@ -145,13 +148,8 @@ function openEntryForm() {
     // reset form FIRST
     entryForm.reset();
 
-
-    // Set today's date as default
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
-    document.getElementById('formDate').value = `${day}-${month}-${year}`;
+    // Set today's date as default in YYYY-MM-DD format
+    document.getElementById('formDate').value = formatDateYYYYMMDD(new Date());
 }
 
 // Close form function
@@ -215,21 +213,20 @@ function validateEntryForm() {
         errors.push('Date is required');
         document.getElementById('formDate').style.borderColor = 'rgba(239, 68, 68, 0.5)';
     } else {
-        // Validate date format: DD-MM-YYYY
-        const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+        // Validate date format: YYYY-MM-DD
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(date)) {
-            errors.push('Invalid date format. Please use DD-MM-YYYY format (e.g., 15-01-2024)');
+            errors.push('Invalid date format. Please use YYYY-MM-DD format (e.g., 2024-01-15)');
             document.getElementById('formDate').style.borderColor = 'rgba(239, 68, 68, 0.5)';
         } else {
             // validate that the date is actually valid (not just format)
-            const [day, month, year] = date.split('-').map(Number);
+            const [year, month, day] = date.split('-').map(Number);
             const dateObj = new Date(year, month - 1, day);
-
             
             if (dateObj.getDate() !== day || 
                 dateObj.getMonth() !== month - 1 
                 || dateObj.getFullYear() !== year) {
-                errors.push('Invalid date. Please enter a valid date in DD-MM-YYYY format');
+                errors.push('Invalid date. Please enter a valid date in YYYY-MM-DD format');
                 document.getElementById('formDate').style.borderColor = 'rgba(239, 68, 68, 0.5)';
             }
         }
@@ -271,10 +268,19 @@ function clearFieldErrors(field) {
     }
 }
 
-// --18.01.2026 - NC : From submission handler ------------------
-// ------ Step 4: Form Submission Handler ------------------
+// Helper function to format date as YYYY-MM-DD
+function formatDateYYYYMMDD(date) {
+    // date is a Date object
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// --18.01.2026 - NC : Form submission handler ------------------
+// Form submission handler - stores entries in localStorage
 if (entryForm) {
-    entryForm.addEventListener('submit', async (e) => {
+    entryForm.addEventListener('submit', (e) => {
         e.preventDefault(); // prevent default form submission
 
         // Validate form
@@ -282,12 +288,10 @@ if (entryForm) {
             return; // stop here if form is invalid
         }
 
-        // Submit form data
-        const formData = {
-            projectId: Number(formProjectId.value),
-            date: document.getElementById('formDate').value.trim(),
-            durationMinutes: Number(document.getElementById('formDurationMinutes').value)
-        };
+        // Get form data (already in YYYY-MM-DD format)
+        const formDate = document.getElementById('formDate').value.trim(); // YYYY-MM-DD
+        const formProjectIdValue = Number(formProjectId.value);
+        const formDuration = Number(document.getElementById('formDurationMinutes').value);
 
         // Disable submit button to prevent multiple submissions
         const submitBtn = document.getElementById('submitFormBtn');
@@ -299,54 +303,46 @@ if (entryForm) {
         formSuccess.style.display = 'none';
 
         try {
-            // send POST request to server
-            const response = await fetch('/api/time-entries', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+            // Create entry object (date is already in YYYY-MM-DD format - no conversion!)
+            const entry = {
+                projectId: formProjectIdValue,
+                date: formDate,  // Already YYYY-MM-DD, no conversion needed!
+                durationMinutes: formDuration
+            };
 
-            const data = await response.json();
+            // Add to timeEntries array
+            timeEntries.push(entry);
 
-            if (!response.ok) {
+            // Save to localStorage (local storage only, as per requirements)
+            localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
 
-                // server returned an error
-                formError.style.display = 'block';
-                formError.textContent = data.error || 'Failed to create entry. Please try again later.';
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Create Entry';
-                return;
-            }
-
-            // server returned a success response
+            // Success!
             formSuccess.style.display = 'block';
             formSuccess.textContent = 'Time entry created successfully!';
 
-            // clear form
+            // Clear form
             entryForm.reset();
 
-            // set default date again
-            const today = new Date();
-            const day = String(today.getDate()).padStart(2, '0');
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const year = today.getFullYear();
-            document.getElementById('formDate').value = `${day}-${month}-${year}`;
+            // Set default date again (YYYY-MM-DD format)
+            document.getElementById('formDate').value = formatDateYYYYMMDD(new Date());
 
-            // close form after 1.5 seconds
+            // Refresh history list immediately
+            renderHistory();
+
+            // Close form after 1.5 seconds
             setTimeout(() => {
                 closeEntryForm();
-                // TODO: NC: Refresh history list here
-                // refresh history list 
-                // renderHistory();
             }, 1500);
 
+            // Re-enable submit button
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Entry';
+
         } catch (error) {
-            // network or other unexpected error
+            // Error handling
             console.error('Error creating time entry:', error);
             formError.style.display = 'block';
-            formError.textContent = 'An unexpected error occurred. Please try again later.';
+            formError.textContent = 'An error occurred while saving the entry. Please try again.';
             submitBtn.disabled = false;
             submitBtn.textContent = 'Create Entry';
         }   
