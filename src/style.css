@@ -4,9 +4,21 @@
     --text-main: #ffffff;
     --text-dim: #8e8f94;
     --accent-blue: #6366f1;
+    --accent-blue-hover: #4f52e5;
     --accent-orange: #f59e0b;
     --divider-color: #2e2f34;
     --hover-bg: #25262b;
+    
+    /* Error colors */
+    --error-color: rgba(239, 68, 68, 0.5);
+    --error-bg: rgba(239, 68, 68, 0.1);
+    --error-border: rgba(239, 68, 68, 0.3);
+    --error-text: #fca5a5;
+    
+    /* Success colors */
+    --success-bg: rgba(52, 211, 153, 0.1);
+    --success-border: rgba(52, 211, 153, 0.3);
+    --success-text: #86efac;
 }
 
 * {
@@ -268,7 +280,7 @@ body {
     margin-left: 8px;
 }
 
-/* 18.01.2026 - NC : History Header */
+/* History Header */
 .history-header {
     display: flex;
     justify-content: space-between;
@@ -282,23 +294,33 @@ body {
     color: var(--text-main);
 }
 
+/* Base button styles - shared by primary buttons */
+.btn-base,
+.btn-primary,
 .add-entry-btn {
     background: var(--accent-blue);
     color: white;
     border: none;
-    padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
     font-weight: 500;
+    transition: background 0.2s ease;
+}
+
+.btn-base:hover,
+.btn-primary:hover,
+.add-entry-btn:hover {
+    background: var(--accent-blue-hover);
+}
+
+/* Specific overrides for add-entry-btn */
+.add-entry-btn {
+    padding: 8px 16px;
+    font-size: 14px;
     transition: background 0.3s ease;
 }
 
-.add-entry-btn:hover {
-    background: #4f52e5;
-}
-
-/* 18.01.2026 - NC : Form Modal */
+/* Form Modal */
 .form-modal {
     position: fixed;
     top: 0;
@@ -365,7 +387,7 @@ body {
     background: var(--divider-color);
 }
 
-/* 18.01.2026 - NC : Form Group */
+/* Form Group */
 .form-group {
     margin-bottom: 20px;
 }
@@ -402,11 +424,11 @@ body {
     color: var(--text-main);
 }
 
-/* 18.01.2026 - NC : Error and Success Messages */
+/* Error and Success Messages */
 .error-message {
-    background: rgba(239, 68,68, 0.1);
-    border: 1px solid rgba(239, 68,68, 0.3);
-    color: #fca5a5;
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    color: var(--error-text);
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 15px;
@@ -414,16 +436,16 @@ body {
 }
 
 .success-message {
-    background: rgba(52, 211, 153, 0.1);
-    border: 1px solid rgba(52, 211, 153, 0.3);
-    color: #86efac;
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: var(--success-text);
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 15px;
     font-size: 14px;
 }
 
-/* 18.01.2026 - NC : Form Actions */
+/* Form Actions */
 .form-actions {
     display: flex;
     gap: 12px;
@@ -434,22 +456,11 @@ body {
 .btn-secondary {
     flex: 1;
     padding: 12px;
-    border: none;
-    border-radius: 8px;
     font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
     transition: all 0.2s;
 }
 
-.btn-primary {
-    background: var(--accent-blue);
-    color: white;
-}
-
-.btn-primary:hover {
-    background: #4f52e5;
-}
+/* btn-primary inherits base styles from .btn-base/.btn-primary selector above */
 
 .btn-primary:disabled {
     background: var(--divider-color);

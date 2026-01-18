@@ -5,7 +5,11 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "playwright test && node scripts/generate-test-results-md.js",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report",
+    "test:md": "node scripts/generate-test-results-md.js",
     "dev": "nodemon backend/server.js"
   },
   "repository": {
@@ -23,5 +27,8 @@
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "nodemon": "^3.1.11"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0"
   }
 }

@@ -51,18 +51,16 @@
     </div>
 
     <!-- History Section -->
-    <!-- 18.01.2026 - NC : Add "Add Entry" button to the history panel -->
     <div id="historySection" class="history-panel" style="display:none;">
         <div class="history-header"> 
             <h3>Heute</h3> 
-            <button id="addEntryBtn" class="add-entry-btn">+ Add Entry</button>
+            <button id="addEntryBtn" class="btn-base add-entry-btn">+ Add Entry</button>
         </div>
         <ul id="entryList"></ul>
         <div class="total">Total: <span id="totalTime">0</span> min</div>
     </div>
 
     <!-- Add Entry Modal -->
-    <!--START - 18.01.2026 - NC : Add Add Entry Modal -->
     <div id="entryFormModal" class="form-modal" style="display:none;">
         <div class="form-overlay"></div>
         <div class="form-container">
@@ -76,18 +74,16 @@
                     <label for="formProjectId">Project</label>
                     <select id="formProjectId" name="projectId" required>
                         <option value="">Select Project...</option>
-                        <!-- 18.01.2026 - NC : Projects will be populated from the server -->
+                        <!-- Projects are loaded from localStorage for privacy -->
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="formDate">Date</label>
                     <input 
-                        type="text" 
+                        type="date" 
                         id="formDate" 
                         name="date" 
-                        pattern="\d{4}-\d{2}-\d{2}"
-                        placeholder="YYYY-MM-DD"
                         required
                     />
                 </div>
@@ -109,12 +105,11 @@
 
                 <div class="form-actions">
                     <button type="button" id="cancelFormBtn" class="btn-secondary">Cancel</button>
-                    <button type="submit" id="submitFormBtn" class="btn-primary">Create Entry</button>
+                    <button type="submit" id="submitFormBtn" class="btn-base btn-primary">Create Entry</button>
                 </div>
             </form>
         </div>
     </div>
-    <!--END - 18.01.2026 - NC : Add Add Entry Modal -->
     
 </body>
 </html>
