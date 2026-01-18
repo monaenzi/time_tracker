@@ -114,19 +114,20 @@ function openEntryForm() {
     entryFormModal.style.display = 'flex';
     populateProjectSelect();
 
+    // clear messages
+    formError.style.display = 'none';
+    formSuccess.style.display = 'none';
+
+    // reset form FIRST
+    entryForm.reset();
+
+
     // Set today's date as default
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const year = today.getFullYear();
     document.getElementById('formDate').value = `${day}-${month}-${year}`;
-
-    // clear messages
-    formError.style.display = 'none';
-    formSuccess.style.display = 'none';
-
-    // reset form
-    entryForm.reset();
 }
 
 // Close form function
