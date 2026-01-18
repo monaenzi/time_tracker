@@ -94,3 +94,90 @@ function renderHistory() {
 
 fetchProjects();
 renderHistory();
+
+
+
+// 18.01.2026 - NC: Create entry form ui ------------------
+
+// Get form elements
+const addEntryBtn = document.getElementById('addEntryBtn');
+const entryFormModal = document.getElementById('entryFormModal');
+const closeFormBtn = document.getElementById('closeFormBtn');
+const cancelFormBtn = document.getElementById('cancelFormBtn');
+const entryForm = document.getElementById('entryForm');
+const formProjectId = document.getElementById('formProjectId');
+const formError = document.getElementById('formError');
+const formSuccess = document.getElementById('formSuccess');
+
+// Open form function
+function openEntryForm() {
+    entryFormModal.style.display = 'flex';
+    populateProjectSelect();
+
+    // Set today's date as default
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    document.getElementById('formDate').value = `${day}-${month}-${year}`;
+
+    // clear messages
+    formError.style.display = 'none';
+    formSuccess.style.display = 'none';
+
+    // reset form
+    entryForm.reset();
+}
+
+// Close form function
+function closeEntryForm() {
+    entryFormModal.style.display = 'none';
+    entryForm.reset();
+    formError.style.display = 'none';
+    formSuccess.style.display = 'none';
+}
+
+
+// Populate project select function
+async function populateProjectSelect() {
+    try {
+        const res = await fetch('projects.json');
+        const projects = await res.json();
+
+        // Clear existing options
+        formProjectId.innerHTML = '<option value="">Select a project...</option>';
+
+        // Add projects
+        projects.forEach(project => {
+            const option = document.createElement('option');
+            option.value = project.id;
+            option.textContent = project.name;
+            formProjectId.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error populating project select:', error);
+        formError.style.display = 'block';
+        formError.textContent = 'Failed to load projects. Please try again later.';
+    }
+}
+
+// event listeners
+if (addEntryBtn) {
+    addEntryBtn.addEventListener('click', openEntryForm);
+}
+
+if (closeFormBtn) {
+    closeFormBtn.addEventListener('click', closeEntryForm);
+}
+
+if (cancelFormBtn) {
+    cancelFormBtn.addEventListener('click', closeEntryForm);
+}
+
+if (entryFormModal) {
+    entryFormModal.addEventListener('click', (e) => {
+        if (e.target.classList.contains('form-overlay')) {
+            closeEntryForm();
+        }
+    });
+}
