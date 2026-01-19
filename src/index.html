@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="js/main.js" defer></script>
+</head>
+
+<body>
+    <div class="timer-container">
+        <div class="main-display">
+            <div class="current-project-tag">
+                <span class="dot" id="tagDot"></span>
+                <span id="activeProjectName">DEEP WORK</span>
+            </div>
+            <div class="time-number" id="timerDisplay">00:00</div>
+            <div class="status-label">
+                <span class="dot-small orange"></span>
+                <span id="statusText">Paused</span>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="toolbar">
+            <div class="project-selector-wrapper">
+                <div class="custom-select" id="selectTrigger" data-testid="project-trigger">
+                    <span class="dot blue" id="selectedDot"></span>
+                    <span id="selectedProjectText">Deep Work</span>
+                    <span class="chevron">↕</span>
+                </div>
+                <div class="dropdown-menu" id="projectDropdown" data-testid="dropdown-menu">
+                    <div class="search-box">
+                        <input type="text" id="projectSearch" placeholder="Search or add...">
+                    </div>
+                    <div class="projects-list" id="projectsList" data-testid="projects-list"></div>
+                </div>
+            </div>
+
+            <div class="v-divider"></div>
+
+            <div class="controls">
+                <button id="startStopBtn" class="icon-btn" title="Start/Stop">▶</button>
+                <button id="resetBtn" class="icon-btn" title="Reset">↺</button>
+                <div class="v-divider"></div>
+                <button id="historyBtn" class="icon-btn" title="History">🕒<span class="badge"
+                        id="historyCount">3</span></button>
+                <div class="v-divider"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="historySection" class="history-panel" style="display:none;">
+        <h3>Heute</h3>
+        <ul id="entryList"></ul>
+        <div class="total">Total: <span id="totalTime">0</span> min</div>
+    </div>
+</body>
+
+</html>
