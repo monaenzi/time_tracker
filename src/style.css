@@ -288,6 +288,27 @@ body {
     }
 }
 
+.history-panel li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0 8px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+}
+
 /*  MODAL & FORM DESIGN  */
 
 .form-modal {

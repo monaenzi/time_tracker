@@ -101,18 +101,37 @@ async function populateProjectSelect() {
     });
 }
 
+function deleteEntry(index) {
+    if (confirm("Are you sure you want to delete this entry?")) {
+        timeEntries.splice(index, 1);
+        localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+        renderHistory();
+    }
+}
+
 function renderHistory() {
     const list = document.getElementById('entryList');
     const today = new Date().toISOString().split('T')[0];
-    const todaysData = timeEntries.filter(e => e.date === today);
     
     list.innerHTML = '';
     let total = 0;
-    todaysData.forEach(e => {
-        total += e.durationMinutes;
-        list.innerHTML += `<li>Project ${e.projectid}: ${e.durationMinutes} min</li>`;
+
+    timeEntries.forEach((e, index) => {
+        if (e.date === today) {
+            total += e.durationMinutes;
+
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>Project ${e.projectid}: ${e.durationMinutes} min</span>
+                <button class="delete-btn" onclick="deleteEntry(${index})" title="Löschen">×</button>
+            `;
+            list.appendChild(li);
+        }
     });
     document.getElementById('totalTime').textContent = total;
+
+    const badge = document.getElementById('historyCount');
+    if (badge) badge.textContent = timeEntries.filter(e => e.date === today).length;
 }
 
 document.getElementById('startStopBtn').onclick = function() {
