@@ -7,13 +7,6 @@
 
 # testing
 /coverage
-/test-results/*
-!/test-results/test-results.json
-!/test-results/test-results.md
-!/test-results/.gitkeep
-/playwright-report
-tests/test-output*.txt
-tests/test-report.json
 
 # next.js
 /.next/
@@ -49,6 +42,3 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
-
-# documentation
-/docs

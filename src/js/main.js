@@ -1,17 +1,12 @@
+let startTime;
+let timerInterval;
+let isRunning = false;
 let selectedProjectId = null;
-let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];
-let projects = []; // Store projects for name lookup    
+let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];    
+let elapsedTime = 0;
 
-// ==================== TIMER CLASS ====================
-// Encapsulates all timer-related state and functionality
-class Timer {
-    constructor() {
-        this.startTime = null;
-        this.elapsedTime = 0;
-        this.isRunning = false;
-        this.interval = null;
-    }
 
+<<<<<<< HEAD
     start() {
         this.isRunning = true;
         this.startTime = new Date() - (this.elapsedTime * CONSTANTS.TIME.MS_PER_SECOND);
@@ -218,472 +213,101 @@ async function fetchProjects() {
         handleError(error, {
             logMessage: 'Error loading projects in selector',
             userMessage: `Failed to load projects: ${error.message}`,
-            showInUI: true,
-            uiElement: 'projectsList'
+            showInUI: false
         });
+        renderProjectsListError(`Failed to load projects. ${error?.message || ''}`.trim(), () => fetchProjects());
     }
 }
 
 function selectProject(p) {
     selectedProjectId = p.id;
-    DOM.selectedProjectText.textContent = p.name;
-    DOM.activeProjectName.textContent = p.name.toUpperCase();
-    DOM.projectDropdown.style.display = 'none';
+    document.getElementById('selectedProjectText').textContent = p.name;
+    document.getElementById('activeProjectName').textContent = p.name.toUpperCase();
+    document.getElementById('projectDropdown').style.display = 'none';
 }
 
 
-// Timer control handlers
-function handleStartStop() {
-    if (!timer.getIsRunning()) {
+document.getElementById('startStopBtn').onclick = function() {
+    if (!isRunning) {
         if (!selectedProjectId) return alert("Select a project first!");
-        timer.start();
+        startTimer();
     } else {
-        timer.pause();
+        pauseTimer();
     }
+};
+
+function startTimer() {
+    isRunning = true;
+    startTime = new Date() - (elapsedTime * 1000);
+    document.getElementById('startStopBtn').textContent = '⏹';
+    document.getElementById('statusText').textContent = 'Running';
+    timerInterval = setInterval(updateUI, 1000);
 }
 
-function handleReset() {
-    if (timer.getElapsedTime() > 0) {
-        const duration = timer.stop();
-        
-        // Create entry with YYYY-MM-DD date format
+function pauseTimer() {
+    isRunning = false;
+    clearInterval(timerInterval);
+    elapsedTime = Math.floor((new Date() - startTime) / 1000);
+    
+    document.getElementById('startStopBtn').textContent = '▶';
+    document.getElementById('statusText').textContent = 'Paused';
+}
+
+function stopTimer() {
+    isRunning = false;
+    clearInterval(timerInterval);
+    const endTime = new Date();
+    const duration = Math.round(elapsedTime / 60);  
+
+   
     const entry = {
-            projectId: selectedProjectId,  // Use camelCase
-            date: formatDateYYYYMMDD(new Date()),  // YYYY-MM-DD format
+        projectid: selectedProjectId,
+        date: new Date().toISOString().split('T')[0],
         durationMinutes: duration
     };
     
     timeEntries.push(entry);
     localStorage.setItem('timeEntries', JSON.stringify(timeEntries));   
+    
+    elapsedTime = 0;
+    document.getElementById('timerDisplay').textContent = '00:00';
+    document.getElementById('startStopBtn').textContent = '▶';
+    document.getElementById('statusText').textContent = 'Paused';
     renderHistory();
 }
+
+function updateUI() {
+    const diff = Math.floor((new Date() - startTime) / 1000);
+    const m = String(Math.floor(diff / 60)).padStart(2, '0');
+    const s = String(diff % 60).padStart(2, '0');
+    document.getElementById('timerDisplay').textContent = `${m}:${s}`;  
 }
 
 
-// Project selection handler
-function toggleProjectDropdown() {
-    DOM.projectDropdown.style.display = DOM.projectDropdown.style.display === 'block' ? 'none' : 'block';
-}
+document.getElementById('selectTrigger').onclick = () => {
+    const menu = document.getElementById('projectDropdown');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+};
 
-// History panel handler
-function toggleHistoryPanel() {
-    DOM.historySection.style.display = DOM.historySection.style.display === 'none' ? 'block' : 'none';
-}
-
-// Helper function to get project name by ID
-function getProjectName(projectId) {
-    if (!projectId) return 'Unknown Project';
-    
-    // Convert projectId to number for comparison (handles both string and number IDs)
-    const id = typeof projectId === 'string' ? parseInt(projectId, 10) : projectId;
-    
-    const project = projects.find(p => {
-        const pId = typeof p.id === 'string' ? parseInt(p.id, 10) : p.id;
-        return pId === id;
-    });
-    
-    return project ? project.name : `Project ${projectId}`;
-}
+document.getElementById('resetBtn').onclick = function() {
+    if (elapsedTime > 0) {
+        stopTimer();
+    }
+};
 
 function renderHistory() {
-    // Get today's date in YYYY-MM-DD format
-    const today = formatDateYYYYMMDD(new Date());
+    const list = document.getElementById('entryList');
+    const today = new Date().toISOString().split('T')[0];
     const todaysData = timeEntries.filter(e => e.date === today);
     
-    // Debug: Log all entries and today's date for troubleshooting
-    console.log('All entries in localStorage:', timeEntries);
-    console.log("Today's date (filter):", today);
-    console.log("Today's entries (filtered):", todaysData);
-    console.log("Total entries:", timeEntries.length, "| Today's entries:", todaysData.length);
-    
-    DOM.entryList.innerHTML = '';
+    list.innerHTML = '';
     let total = 0;
     todaysData.forEach(e => {
         total += e.durationMinutes;
-        // Use projectId (camelCase) - handle both formats for compatibility
-        const projectId = e.projectId || e.projectid;
-        const projectName = getProjectName(projectId);
-        DOM.entryList.innerHTML += `<li>${projectName}: ${e.durationMinutes} min</li>`;
+        list.innerHTML += `<li>Project ${e.projectid}: ${e.durationMinutes} min</li>`;
     });
-    DOM.totalTime.textContent = total;
+    document.getElementById('totalTime').textContent = total;
 }
 
-// ==================== INITIALIZATION ====================
-// Check if page is being served from a server (not file://)
-function isServerContext() {
-    return window.location.protocol === 'http:' || window.location.protocol === 'https:';
-}
-
-// Initialize projects on page load - fetch from server
-if (isServerContext()) {
-    fetchProjects();
-} else {
-    console.error('Page must be accessed through the server (http://localhost:3000), not as a file:// URL');
-    if (DOM.projectsList) {
-        DOM.projectsList.innerHTML = '<div style="padding: 10px; color: #fca5a5;">Please access this page through http://localhost:3000</div>';
-    }
-}
+fetchProjects();
 renderHistory();
-
-// Initialize all event listeners
-initializeEventListeners();
-
-
-// ==================== FORM MANAGEMENT ====================
-
-// Open form function
-async function openEntryForm() {
-    DOM.entryFormModal.style.display = 'flex';
-    
-    // clear messages
-    DOM.formError.style.display = 'none';
-    DOM.formSuccess.style.display = 'none';
-
-    // reset form FIRST
-    DOM.entryForm.reset();
-
-    // Set today's date as default in YYYY-MM-DD format
-    DOM.formDate.value = formatDateYYYYMMDD(new Date());
-    
-    // Populate projects (await to ensure they're loaded before user interacts)
-    await populateProjectSelect();
-}
-
-// Close form function
-function closeEntryForm() {
-    DOM.entryFormModal.style.display = 'none';
-    DOM.entryForm.reset();
-    DOM.formError.style.display = 'none';
-    DOM.formSuccess.style.display = 'none';
-}
-
-
-// Populate project select function - fetch from server
-async function populateProjectSelect() {
-    // Ensure the select element exists
-    if (!DOM.formProjectId) {
-        console.error('formProjectId element not found');
-        return;
-    }
-
-    try {
-        const projectsData = await fetchProjectsFromServer();
-
-        // Validate projects data
-        if (!Array.isArray(projectsData) || projectsData.length === 0) {
-            throw new Error('No projects available');
-        }
-
-        // Clear existing options
-        DOM.formProjectId.innerHTML = '<option value="">Select a project...</option>';
-
-        // Store projects globally for name lookup
-        projects = projectsData;
-        
-        // Add projects from server
-        projects.forEach(project => {
-            if (project && project.id && project.name) {
-                const option = document.createElement('option');
-                option.value = project.id;
-                option.textContent = project.name;
-                DOM.formProjectId.appendChild(option);
-            }
-        });
-
-        // Verify options were added
-        if (DOM.formProjectId.options.length <= 1) {
-            throw new Error('Failed to populate project options');
-        }
-    } catch (error) {
-        handleError(error, {
-            logMessage: 'Error populating project select',
-            userMessage: 'Failed to load projects. Please try again later.',
-            showInUI: true,
-            uiElement: 'formError'
-        });
-    }
-}
-
-// ==================== FORM VALIDATION ====================
-
-// Error styling - get from CSS custom property
-function getErrorColor() {
-    return getComputedStyle(document.documentElement).getPropertyValue('--error-color').trim() || 'rgba(239, 68, 68, 0.5)';
-}
-
-const ERROR_BORDER_COLOR = getErrorColor();
-
-// Error styling helper functions
-function setFieldError(field) {
-    if (field) {
-        field.style.borderColor = ERROR_BORDER_COLOR;
-    }
-}
-
-function clearFieldError(field) {
-    if (field) {
-        field.style.borderColor = '';
-    }
-    // Also clear error message if visible
-    if (DOM.formError && DOM.formError.style.display === 'block') {
-        DOM.formError.style.display = 'none';
-    }
-}
-
-// Validate project selection
-function validateProject(projectId) {
-    const errors = [];
-    if (!projectId || projectId === '') {
-        errors.push({
-            message: 'Please select a project',
-            field: DOM.formProjectId
-        });
-    }
-    return errors;
-}
-
-// Validate date input
-// Note: With type="date", the browser ensures YYYY-MM-DD format and valid dates
-function validateDate(date) {
-    const errors = [];
-
-    if (!date || date.trim() === '') {
-        errors.push({
-            message: 'Date is required',
-            field: DOM.formDate
-        });
-        return errors;
-    }
-    
-    // Native date input already ensures YYYY-MM-DD format and valid dates
-    // Additional validation: check if date is a valid Date object
-    const dateObj = new Date(date);
-    if (isNaN(dateObj.getTime())) {
-        errors.push({
-            message: 'Invalid date. Please select a valid date',
-            field: DOM.formDate
-        });
-    }
-    
-    return errors;
-}
-
-// Validate duration input
-function validateDuration(durationMinutes) {
-    const errors = [];
-    
-    if (!durationMinutes || durationMinutes.trim() === '') {
-        errors.push({
-            message: 'Duration is required',
-            field: DOM.formDurationMinutes
-        });
-        return errors;
-    }
-    
-        // Validate duration is a number
-       const duration = Number(durationMinutes);
-    if (isNaN(duration) || duration <= 0) {
-        errors.push({
-            message: 'Duration must be a positive number',
-            field: DOM.formDurationMinutes
-        });
-    } else if (!Number.isInteger(duration)) {
-        errors.push({
-            message: 'Duration must be a whole number',
-            field: DOM.formDurationMinutes
-        });
-    }
-    
-    return errors;
-}
-
-// Main validation function - orchestrates all field validations
-function validateEntryForm() {
-    // Clear previous errors
-    DOM.formError.style.display = 'none';
-    DOM.formError.textContent = '';
-
-    // Remove error styling from all fields
-    document.querySelectorAll('.form-group input, .form-group select').forEach(field => {
-        clearFieldError(field);
-    });
-
-    // Collect validation errors from all fields
-    const allErrors = [];
-    allErrors.push(...validateProject(DOM.formProjectId.value));
-    allErrors.push(...validateDate(DOM.formDate.value));
-    allErrors.push(...validateDuration(DOM.formDurationMinutes.value));
-
-    // Apply error styling and collect error messages
-    const errorMessages = [];
-    allErrors.forEach(error => {
-        errorMessages.push(error.message);
-        if (error.field) {
-            setFieldError(error.field);
-        }
-    });
-
-    // If there are errors, display them and prevent form submission
-    if (errorMessages.length > 0) {
-        DOM.formError.style.display = 'block';
-        DOM.formError.textContent = errorMessages.join(', ');
-        return false;
-    }
-
-    // If no errors, return true
-    return true;
-}
-
-
-// ==================== FORM HELPERS ====================
-// Note: clearFieldError() is defined above with error styling helpers
-
-// Helper function to format date as YYYY-MM-DD
-function formatDateYYYYMMDD(date) {
-    // date is a Date object
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(CONSTANTS.DATE.MONTH_PADDING, CONSTANTS.DATE.PADDING_CHAR);
-    const day = String(date.getDate()).padStart(CONSTANTS.DATE.DAY_PADDING, CONSTANTS.DATE.PADDING_CHAR);
-    return `${year}-${month}-${day}`;
-}
-
-// ==================== FORM SUBMISSION ====================
-// Form submission handler - stores entries in localStorage
-function handleFormSubmit(e) {
-        e.preventDefault(); // prevent default form submission
-
-        // Validate form
-        if (!validateEntryForm()) {
-            return; // stop here if form is invalid
-        }
-
-    // Get form data (already in YYYY-MM-DD format)
-    const formDate = DOM.formDate.value.trim(); // YYYY-MM-DD
-    const formProjectIdValue = Number(DOM.formProjectId.value);
-    const formDuration = Number(DOM.formDurationMinutes.value);
-
-        // Disable submit button to prevent multiple submissions
-    DOM.submitFormBtn.disabled = true;
-    DOM.submitFormBtn.textContent = 'Creating entry...';
-
-        // Clear previous messages
-    DOM.formError.style.display = 'none';
-    DOM.formSuccess.style.display = 'none';
-
-    try {
-        // Create entry object (date is already in YYYY-MM-DD format - no conversion!)
-        const entry = {
-            projectId: formProjectIdValue,
-            date: formDate,  // Already YYYY-MM-DD, no conversion needed!
-            durationMinutes: formDuration
-        };
-
-        // Add to timeEntries array
-        timeEntries.push(entry);
-
-        // Save to localStorage (local storage only, as per requirements)
-        localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
-
-        // Success!
-        DOM.formSuccess.style.display = 'block';
-        DOM.formSuccess.textContent = 'Time entry created successfully!';
-
-        // Clear form
-        DOM.entryForm.reset();
-
-        // Set default date again (YYYY-MM-DD format)
-        DOM.formDate.value = formatDateYYYYMMDD(new Date());
-
-        // Refresh history list immediately
-        renderHistory();
-
-        // Close form after delay
-            setTimeout(() => {
-                closeEntryForm();
-        }, CONSTANTS.TIMEOUTS.FORM_CLOSE_DELAY);
-
-        // Re-enable submit button
-        DOM.submitFormBtn.disabled = false;
-        DOM.submitFormBtn.textContent = 'Create Entry';
-
-    } catch (error) {
-        handleError(error, {
-            logMessage: 'Error creating time entry',
-            userMessage: 'An error occurred while saving the entry. Please try again.',
-            showInUI: true,
-            uiElement: 'formError',
-            fallbackAction: () => {
-                DOM.submitFormBtn.disabled = false;
-                DOM.submitFormBtn.textContent = 'Create Entry';
-            }
-        });
-    }
-}
-
-// ==================== EVENT LISTENERS ====================
-// Initialize all event listeners in one centralized location
-function initializeEventListeners() {
-    // Timer controls
-    if (DOM.startStopBtn) {
-        DOM.startStopBtn.onclick = handleStartStop;
-    }
-    
-    if (DOM.resetBtn) {
-        DOM.resetBtn.onclick = handleReset;
-    }
-    
-    // Project selection
-    if (DOM.selectTrigger) {
-        DOM.selectTrigger.onclick = toggleProjectDropdown;
-    }
-    
-    // History panel
-    if (DOM.historyBtn) {
-        DOM.historyBtn.onclick = toggleHistoryPanel;
-    }
-    
-    // Form submission
-    if (DOM.entryForm) {
-        DOM.entryForm.addEventListener('submit', handleFormSubmit);
-    }
-    
-    // Real-time validation feedback - clear error styling when user starts typing/selecting
-    if (DOM.formDate) {
-        DOM.formDate.addEventListener('input', () => {
-            clearFieldError(DOM.formDate);
-        });
-    }
-    
-    if (DOM.formDurationMinutes) {
-        DOM.formDurationMinutes.addEventListener('input', () => {
-            clearFieldError(DOM.formDurationMinutes);
-        });
-    }
-    
-    if (DOM.formProjectId) {
-        DOM.formProjectId.addEventListener('change', () => {
-            clearFieldError(DOM.formProjectId);
-        });
-    }
-    
-    // Form modal controls
-    if (DOM.addEntryBtn) {
-        DOM.addEntryBtn.addEventListener('click', openEntryForm);
-    }
-    
-    if (DOM.closeFormBtn) {
-        DOM.closeFormBtn.addEventListener('click', closeEntryForm);
-    }
-    
-    if (DOM.cancelFormBtn) {
-        DOM.cancelFormBtn.addEventListener('click', closeEntryForm);
-    }
-    
-    if (DOM.entryFormModal) {
-        DOM.entryFormModal.addEventListener('click', (e) => {
-        if (e.target.classList.contains('form-overlay')) {
-            closeEntryForm();
-        }
-    });
-    }
-}

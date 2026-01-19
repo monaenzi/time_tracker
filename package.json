@@ -5,12 +5,9 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "playwright test && node scripts/generate-test-results-md.js",
-    "test:ui": "playwright test --ui",
-    "test:headed": "playwright test --headed",
-    "test:report": "playwright show-report",
-    "test:md": "node scripts/generate-test-results-md.js",
-    "dev": "nodemon backend/server.js"
+    "dev": "nodemon backend/server.js",
+    "testui": "playwright test --ui",
+    "test": "playwright test"
   },
   "repository": {
     "type": "git",
