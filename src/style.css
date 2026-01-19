@@ -152,6 +152,7 @@ body {
     border: 1px solid var(--divider-color);
     border-radius: 16px;
     width: 280px;
+    max-width: calc(100vw - 40px);
     margin-top: 10px;
     display: none;
     z-index: 100;
@@ -346,7 +347,9 @@ body {
 .form-container {
     position: relative;
     background: var(--card-bg);
-    width: 440px;
+    width: min(440px, calc(100vw - 40px));
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
     padding: 30px;
     border-radius: 28px;
     border: 1px solid var(--divider-color);
@@ -495,5 +498,28 @@ body {
     .controls {
         width: 100%;
         justify-content: center;
+    }
+
+    .history-panel {
+        padding: 20px;
+    }
+
+    .dropdown-menu {
+        width: calc(100vw - 40px);
+    }
+
+    .form-container {
+        padding: 22px;
+        border-radius: 22px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 420px) {
+    .time-number {
+        font-size: 86px;
     }
 }
