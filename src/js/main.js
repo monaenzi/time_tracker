@@ -161,7 +161,7 @@ function handleError(error, context = {}) {
 // Shared function to fetch projects from server
 async function fetchProjectsFromServer() {
     try {
-        const res = await fetch('/api/projects');
+        const res = await fetch('http://localhost:3000/api/projects');
         if (!res.ok) {
             const errorText = await res.text();
             throw new Error(`HTTP ${res.status}: ${errorText || 'Failed to fetch projects'}`);
