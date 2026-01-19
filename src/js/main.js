@@ -4,6 +4,8 @@ let isRunning = false;
 let selectedProjectId = null;
 let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];    
 let elapsedTime = 0;
+let selectedProjectName = '';
+
 
 // ==================== PROJEKT FUNKTIONEN ====================
 
@@ -24,10 +26,13 @@ async function fetchProjects() {
 
 function selectProject(p) {
     selectedProjectId = p.id;
+    selectedProjectName = p.name;
+
     document.getElementById('selectedProjectText').textContent = p.name;
     document.getElementById('activeProjectName').textContent = p.name.toUpperCase();
     document.getElementById('projectDropdown').style.display = 'none';
 }
+
 
 // ==================== TIMER FUNKTIONEN ====================
 
@@ -55,6 +60,7 @@ function stopTimer() {
 
     const entry = {
         projectid: selectedProjectId,
+        projectName: selectedProjectName,
         date: new Date().toISOString().split('T')[0],
         durationMinutes: duration
     };
@@ -110,7 +116,7 @@ function renderHistory() {
     let total = 0;
     todaysData.forEach(e => {
         total += e.durationMinutes;
-        list.innerHTML += `<li>Project ${e.projectid}: ${e.durationMinutes} min</li>`;
+        list.innerHTML += `<li>${e.projectName}: ${e.durationMinutes} min</li>`;
     });
     document.getElementById('totalTime').textContent = total;
 }
@@ -150,16 +156,20 @@ document.getElementById('cancelFormBtn').onclick = closeModal;
 
 document.getElementById('entryForm').onsubmit = function(e) {
     e.preventDefault();
-    
+
+    const select = document.getElementById('formProjectId');
+    const selectedOption = select.options[select.selectedIndex];
+
     const entry = {
-        projectid: document.getElementById('formProjectId').value,
+        projectid: select.value,
+        projectName: selectedOption.textContent,
         date: document.getElementById('formDate').value,
         durationMinutes: parseInt(document.getElementById('formDurationMinutes').value)
     };
 
     timeEntries.push(entry);
     localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
-    
+
     renderHistory();
     this.reset();
     closeModal();

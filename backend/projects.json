@@ -2,16 +2,16 @@
   {
     "id": 1,
     "name": "Web Design",
-    "client": "Company A"
+    "client": "Web Design"
   },
   {
     "id": 2,
     "name": "App Development",
-    "client": "Company B"
+    "client": "App Development"
   },
   {
     "id": 3,
     "name": "Consulting",
-    "client": "Company C"
+    "client": "Consulting"
   }
 ]
