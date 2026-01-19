@@ -39,8 +39,15 @@ app.get(route, (_, res) => {
         return res.status(500).send("Error reading projects.json file");
       }
 
-      const projects = JSON.parse(data);
-      return res.status(200).send(projects);
+      try {
+        const projects = JSON.parse(data);
+        return res.status(200).json(projects);
+      } catch (parseError) {
+        console.error("Invalid JSON in projects.json:", parseError);
+        return res
+          .status(500)
+          .json({ message: "Invalid projects.json format. Please fix and retry." });
+      }
     });
   } catch (error) {
     console.error(error);

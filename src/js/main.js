@@ -1,6 +1,26 @@
 let selectedProjectId = null;
-let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];
+let timeEntries = [];
 let projects = []; // Store projects for name lookup    
+
+// ==================== SAFE STORAGE HELPERS ====================
+function safeJsonParse(raw, fallback) {
+    if (raw == null || raw === '') return fallback;
+    try {
+        return JSON.parse(raw);
+    } catch (error) {
+        // Do not crash the app because of corrupted localStorage.
+        // This is exceptional, so logging is acceptable.
+        console.error('Failed to parse JSON from localStorage:', error);
+        return fallback;
+    }
+}
+
+function loadTimeEntriesFromStorage() {
+    const parsed = safeJsonParse(localStorage.getItem('timeEntries'), []);
+    return Array.isArray(parsed) ? parsed : [];
+}
+
+timeEntries = loadTimeEntriesFromStorage();
 
 // ==================== TIMER CLASS ====================
 // Encapsulates all timer-related state and functionality
@@ -157,6 +177,52 @@ function handleError(error, context = {}) {
     return error;
 }
 
+// ==================== UI HELPERS (ERROR + RETRY) ====================
+function escapeHtml(value) {
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+function renderProjectsListError(message, onRetry) {
+    if (!DOM.projectsList) return;
+
+    const errorTextColor =
+        getComputedStyle(document.documentElement).getPropertyValue('--error-text').trim() || '#fca5a5';
+
+    DOM.projectsList.innerHTML = `
+        <div style="padding: 10px; color: ${errorTextColor}; display: grid; gap: 10px;">
+            <div>${escapeHtml(message)}</div>
+            <button type="button" class="btn-secondary" data-action="retry-projects">Retry</button>
+        </div>
+    `;
+
+    const retryBtn = DOM.projectsList.querySelector('[data-action="retry-projects"]');
+    if (retryBtn && typeof onRetry === 'function') {
+        retryBtn.addEventListener('click', () => onRetry());
+    }
+}
+
+function renderFormErrorWithRetry(message, onRetry) {
+    if (!DOM.formError) return;
+
+    DOM.formError.style.display = 'block';
+    DOM.formError.innerHTML = `
+        <div style="display: grid; gap: 10px;">
+            <div>${escapeHtml(message)}</div>
+            <button type="button" class="btn-secondary" data-action="retry-form-projects">Retry</button>
+        </div>
+    `;
+
+    const retryBtn = DOM.formError.querySelector('[data-action="retry-form-projects"]');
+    if (retryBtn && typeof onRetry === 'function') {
+        retryBtn.addEventListener('click', () => onRetry());
+    }
+}
+
 // ==================== PROJECT FETCHING ====================
 // Shared function to fetch projects from server
 async function fetchProjectsFromServer() {
@@ -218,9 +284,9 @@ async function fetchProjects() {
         handleError(error, {
             logMessage: 'Error loading projects in selector',
             userMessage: `Failed to load projects: ${error.message}`,
-            showInUI: true,
-            uiElement: 'projectsList'
+            showInUI: false
         });
+        renderProjectsListError(`Failed to load projects. ${error?.message || ''}`.trim(), () => fetchProjects());
     }
 }
 
@@ -289,12 +355,6 @@ function renderHistory() {
     // Get today's date in YYYY-MM-DD format
     const today = formatDateYYYYMMDD(new Date());
     const todaysData = timeEntries.filter(e => e.date === today);
-    
-    // Debug: Log all entries and today's date for troubleshooting
-    console.log('All entries in localStorage:', timeEntries);
-    console.log("Today's date (filter):", today);
-    console.log("Today's entries (filtered):", todaysData);
-    console.log("Total entries:", timeEntries.length, "| Today's entries:", todaysData.length);
     
     DOM.entryList.innerHTML = '';
     let total = 0;
@@ -398,9 +458,9 @@ async function populateProjectSelect() {
         handleError(error, {
             logMessage: 'Error populating project select',
             userMessage: 'Failed to load projects. Please try again later.',
-            showInUI: true,
-            uiElement: 'formError'
+            showInUI: false
         });
+        renderFormErrorWithRetry('Failed to load projects. Please try again.', () => populateProjectSelect());
     }
 }
 
