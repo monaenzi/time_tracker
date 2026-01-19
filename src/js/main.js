@@ -5,12 +5,14 @@ let selectedProjectId = null;
 let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];    
 let elapsedTime = 0;
 
+// ==================== PROJEKT FUNKTIONEN ====================
 
 async function fetchProjects() {
     const res = await fetch('http://localhost:3000/api/projects');
     const projects = await res.json();
     const list = document.getElementById('projectsList');
     
+    list.innerHTML = ''; // Liste leeren
     projects.forEach(p => {
         const div = document.createElement('div');
         div.className = 'project-item';
@@ -27,15 +29,7 @@ function selectProject(p) {
     document.getElementById('projectDropdown').style.display = 'none';
 }
 
-
-document.getElementById('startStopBtn').onclick = function() {
-    if (!isRunning) {
-        if (!selectedProjectId) return alert("Select a project first!");
-        startTimer();
-    } else {
-        pauseTimer();
-    }
-};
+// ==================== TIMER FUNKTIONEN ====================
 
 function startTimer() {
     isRunning = true;
@@ -57,10 +51,8 @@ function pauseTimer() {
 function stopTimer() {
     isRunning = false;
     clearInterval(timerInterval);
-    const endTime = new Date();
     const duration = Math.round(elapsedTime / 60);  
 
-   
     const entry = {
         projectid: selectedProjectId,
         date: new Date().toISOString().split('T')[0],
@@ -68,7 +60,7 @@ function stopTimer() {
     };
     
     timeEntries.push(entry);
-    localStorage.setItem('timeEntries', JSON.stringify(timeEntries));   
+    localStorage.setItem('timeEntries', JSON.stringify(timeEntries));    
     
     elapsedTime = 0;
     document.getElementById('timerDisplay').textContent = '00:00';
@@ -85,16 +77,29 @@ function updateUI() {
 }
 
 
-document.getElementById('selectTrigger').onclick = () => {
-    const menu = document.getElementById('projectDropdown');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-};
+function openModal() {
+    document.getElementById('entryFormModal').style.display = 'flex';
+    document.getElementById('formDate').value = new Date().toISOString().split('T')[0];
+    populateProjectSelect();
+}
 
-document.getElementById('resetBtn').onclick = function() {
-    if (elapsedTime > 0) {
-        stopTimer();
-    }
-};
+function closeModal() {
+    document.getElementById('entryFormModal').style.display = 'none';
+}
+
+async function populateProjectSelect() {
+    const res = await fetch('http://localhost:3000/api/projects');
+    const projects = await res.json();
+    const select = document.getElementById('formProjectId');
+    
+    select.innerHTML = '<option value="">Select Project...</option>';
+    projects.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.name;
+        select.appendChild(opt);
+    });
+}
 
 function renderHistory() {
     const list = document.getElementById('entryList');
@@ -109,6 +114,56 @@ function renderHistory() {
     });
     document.getElementById('totalTime').textContent = total;
 }
+
+document.getElementById('startStopBtn').onclick = function() {
+    if (!isRunning) {
+        if (!selectedProjectId) return alert("Select a project first!");
+        startTimer();
+    } else {
+        pauseTimer();
+    }
+};
+
+document.getElementById('resetBtn').onclick = function() {
+    if (elapsedTime > 0) {
+        stopTimer();
+    }
+};
+
+document.getElementById('selectTrigger').onclick = () => {
+    const menu = document.getElementById('projectDropdown');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+};
+
+document.getElementById('historyBtn').onclick = () => {
+    const section = document.getElementById('historySection');
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+};
+
+const addBtn = document.getElementById('addEntryBtn');
+if (addBtn) {
+    addBtn.onclick = openModal;
+}
+
+document.getElementById('closeFormBtn').onclick = closeModal;
+document.getElementById('cancelFormBtn').onclick = closeModal;
+
+document.getElementById('entryForm').onsubmit = function(e) {
+    e.preventDefault();
+    
+    const entry = {
+        projectid: document.getElementById('formProjectId').value,
+        date: document.getElementById('formDate').value,
+        durationMinutes: parseInt(document.getElementById('formDurationMinutes').value)
+    };
+
+    timeEntries.push(entry);
+    localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+    
+    renderHistory();
+    this.reset();
+    closeModal();
+};
 
 fetchProjects();
 renderHistory();
