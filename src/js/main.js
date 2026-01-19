@@ -15,12 +15,8 @@ function safeJsonParse(raw, fallback) {
     }
 }
 
-function loadTimeEntriesFromStorage() {
-    const parsed = safeJsonParse(localStorage.getItem('timeEntries'), []);
-    return Array.isArray(parsed) ? parsed : [];
-}
-
-timeEntries = loadTimeEntriesFromStorage();
+const _loadedEntries = safeJsonParse(localStorage.getItem('timeEntries'), []);
+timeEntries = Array.isArray(_loadedEntries) ? _loadedEntries : [];
 
 // ==================== TIMER CLASS ====================
 // Encapsulates all timer-related state and functionality
@@ -160,7 +156,7 @@ function handleError(error, context = {}) {
             DOM.formError.style.display = 'block';
             DOM.formError.textContent = userMessage;
         } else if (uiElement === 'projectsList') {
-            const errorTextColor = getComputedStyle(document.documentElement).getPropertyValue('--error-text').trim() || '#fca5a5';
+            const errorTextColor = getCssVar('--error-text', '#fca5a5');
             DOM.projectsList.innerHTML = `<div style="padding: 10px; color: ${errorTextColor};">${userMessage}</div>`;
         } else if (uiElement instanceof HTMLElement) {
             uiElement.textContent = userMessage;
@@ -169,15 +165,17 @@ function handleError(error, context = {}) {
     }
 
     // Execute fallback action if provided
-    if (fallbackAction && typeof fallbackAction === 'function') {
-        fallbackAction();
-    }
+    fallbackAction?.();
 
     // Return error for further handling if needed
     return error;
 }
 
 // ==================== UI HELPERS (ERROR + RETRY) ====================
+function getCssVar(name, fallback) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
 function escapeHtml(value) {
     return String(value)
         .replaceAll('&', '&amp;')
@@ -187,40 +185,24 @@ function escapeHtml(value) {
         .replaceAll("'", '&#039;');
 }
 
-function renderProjectsListError(message, onRetry) {
-    if (!DOM.projectsList) return;
+function renderErrorWithRetry(targetEl, message, onRetry) {
+    if (!targetEl) return;
 
-    const errorTextColor =
-        getComputedStyle(document.documentElement).getPropertyValue('--error-text').trim() || '#fca5a5';
+    const errorTextColor = getCssVar('--error-text', '#fca5a5');
+    const showAsBlock = targetEl === DOM.projectsList;
 
-    DOM.projectsList.innerHTML = `
+    if (!showAsBlock) {
+        targetEl.style.display = 'block';
+    }
+
+    targetEl.innerHTML = `
         <div style="padding: 10px; color: ${errorTextColor}; display: grid; gap: 10px;">
             <div>${escapeHtml(message)}</div>
-            <button type="button" class="btn-secondary" data-action="retry-projects">Retry</button>
+            <button type="button" class="btn-secondary" data-action="retry">Retry</button>
         </div>
     `;
 
-    const retryBtn = DOM.projectsList.querySelector('[data-action="retry-projects"]');
-    if (retryBtn && typeof onRetry === 'function') {
-        retryBtn.addEventListener('click', () => onRetry());
-    }
-}
-
-function renderFormErrorWithRetry(message, onRetry) {
-    if (!DOM.formError) return;
-
-    DOM.formError.style.display = 'block';
-    DOM.formError.innerHTML = `
-        <div style="display: grid; gap: 10px;">
-            <div>${escapeHtml(message)}</div>
-            <button type="button" class="btn-secondary" data-action="retry-form-projects">Retry</button>
-        </div>
-    `;
-
-    const retryBtn = DOM.formError.querySelector('[data-action="retry-form-projects"]');
-    if (retryBtn && typeof onRetry === 'function') {
-        retryBtn.addEventListener('click', () => onRetry());
-    }
+    targetEl.querySelector('[data-action="retry"]')?.addEventListener('click', () => onRetry?.());
 }
 
 // ==================== PROJECT FETCHING ====================
@@ -286,7 +268,7 @@ async function fetchProjects() {
             userMessage: `Failed to load projects: ${error.message}`,
             showInUI: false
         });
-        renderProjectsListError(`Failed to load projects. ${error?.message || ''}`.trim(), () => fetchProjects());
+        renderErrorWithRetry(DOM.projectsList, `Failed to load projects. ${error?.message || ''}`.trim(), () => fetchProjects());
     }
 }
 
@@ -460,7 +442,7 @@ async function populateProjectSelect() {
             userMessage: 'Failed to load projects. Please try again later.',
             showInUI: false
         });
-        renderFormErrorWithRetry('Failed to load projects. Please try again.', () => populateProjectSelect());
+        renderErrorWithRetry(DOM.formError, 'Failed to load projects. Please try again.', () => populateProjectSelect());
     }
 }
 
@@ -490,72 +472,20 @@ function clearFieldError(field) {
     }
 }
 
-// Validate project selection
-function validateProject(projectId) {
-    const errors = [];
-    if (!projectId || projectId === '') {
-        errors.push({
-            message: 'Please select a project',
-            field: DOM.formProjectId
-        });
+const validators = {
+    project: (value) => (!value ? 'Please select a project' : null),
+    date: (value) => {
+        if (!value || value.trim() === '') return 'Date is required';
+        return isNaN(new Date(value).getTime()) ? 'Invalid date. Please select a valid date' : null;
+    },
+    duration: (value) => {
+        if (!value || value.trim() === '') return 'Duration is required';
+        const duration = Number(value);
+        if (isNaN(duration) || duration <= 0) return 'Duration must be a positive number';
+        if (!Number.isInteger(duration)) return 'Duration must be a whole number';
+        return null;
     }
-    return errors;
-}
-
-// Validate date input
-// Note: With type="date", the browser ensures YYYY-MM-DD format and valid dates
-function validateDate(date) {
-    const errors = [];
-
-    if (!date || date.trim() === '') {
-        errors.push({
-            message: 'Date is required',
-            field: DOM.formDate
-        });
-        return errors;
-    }
-    
-    // Native date input already ensures YYYY-MM-DD format and valid dates
-    // Additional validation: check if date is a valid Date object
-    const dateObj = new Date(date);
-    if (isNaN(dateObj.getTime())) {
-        errors.push({
-            message: 'Invalid date. Please select a valid date',
-            field: DOM.formDate
-        });
-    }
-    
-    return errors;
-}
-
-// Validate duration input
-function validateDuration(durationMinutes) {
-    const errors = [];
-    
-    if (!durationMinutes || durationMinutes.trim() === '') {
-        errors.push({
-            message: 'Duration is required',
-            field: DOM.formDurationMinutes
-        });
-        return errors;
-    }
-    
-        // Validate duration is a number
-       const duration = Number(durationMinutes);
-    if (isNaN(duration) || duration <= 0) {
-        errors.push({
-            message: 'Duration must be a positive number',
-            field: DOM.formDurationMinutes
-        });
-    } else if (!Number.isInteger(duration)) {
-        errors.push({
-            message: 'Duration must be a whole number',
-            field: DOM.formDurationMinutes
-        });
-    }
-    
-    return errors;
-}
+};
 
 // Main validation function - orchestrates all field validations
 function validateEntryForm() {
@@ -568,25 +498,17 @@ function validateEntryForm() {
         clearFieldError(field);
     });
 
-    // Collect validation errors from all fields
-    const allErrors = [];
-    allErrors.push(...validateProject(DOM.formProjectId.value));
-    allErrors.push(...validateDate(DOM.formDate.value));
-    allErrors.push(...validateDuration(DOM.formDurationMinutes.value));
-
-    // Apply error styling and collect error messages
-    const errorMessages = [];
-    allErrors.forEach(error => {
-        errorMessages.push(error.message);
-        if (error.field) {
-            setFieldError(error.field);
-        }
-    });
+    const errors = [
+        { field: DOM.formProjectId, message: validators.project(DOM.formProjectId.value) },
+        { field: DOM.formDate, message: validators.date(DOM.formDate.value) },
+        { field: DOM.formDurationMinutes, message: validators.duration(DOM.formDurationMinutes.value) }
+    ].filter(e => e.message);
 
     // If there are errors, display them and prevent form submission
-    if (errorMessages.length > 0) {
+    if (errors.length > 0) {
+        errors.forEach(({ field }) => setFieldError(field));
         DOM.formError.style.display = 'block';
-        DOM.formError.textContent = errorMessages.join(', ');
+        DOM.formError.textContent = errors.map(e => e.message).join(', ');
         return false;
     }
 
@@ -683,67 +605,25 @@ function handleFormSubmit(e) {
 // ==================== EVENT LISTENERS ====================
 // Initialize all event listeners in one centralized location
 function initializeEventListeners() {
-    // Timer controls
-    if (DOM.startStopBtn) {
-        DOM.startStopBtn.onclick = handleStartStop;
-    }
-    
-    if (DOM.resetBtn) {
-        DOM.resetBtn.onclick = handleReset;
-    }
-    
-    // Project selection
-    if (DOM.selectTrigger) {
-        DOM.selectTrigger.onclick = toggleProjectDropdown;
-    }
-    
-    // History panel
-    if (DOM.historyBtn) {
-        DOM.historyBtn.onclick = toggleHistoryPanel;
-    }
-    
-    // Form submission
-    if (DOM.entryForm) {
-        DOM.entryForm.addEventListener('submit', handleFormSubmit);
-    }
-    
-    // Real-time validation feedback - clear error styling when user starts typing/selecting
-    if (DOM.formDate) {
-        DOM.formDate.addEventListener('input', () => {
-            clearFieldError(DOM.formDate);
-        });
-    }
-    
-    if (DOM.formDurationMinutes) {
-        DOM.formDurationMinutes.addEventListener('input', () => {
-            clearFieldError(DOM.formDurationMinutes);
-        });
-    }
-    
-    if (DOM.formProjectId) {
-        DOM.formProjectId.addEventListener('change', () => {
-            clearFieldError(DOM.formProjectId);
-        });
-    }
-    
-    // Form modal controls
-    if (DOM.addEntryBtn) {
-        DOM.addEntryBtn.addEventListener('click', openEntryForm);
-    }
-    
-    if (DOM.closeFormBtn) {
-        DOM.closeFormBtn.addEventListener('click', closeEntryForm);
-    }
-    
-    if (DOM.cancelFormBtn) {
-        DOM.cancelFormBtn.addEventListener('click', closeEntryForm);
-    }
-    
-    if (DOM.entryFormModal) {
-        DOM.entryFormModal.addEventListener('click', (e) => {
-        if (e.target.classList.contains('form-overlay')) {
-            closeEntryForm();
-        }
+    const listeners = {
+        startStopBtn: ['click', handleStartStop],
+        resetBtn: ['click', handleReset],
+        selectTrigger: ['click', toggleProjectDropdown],
+        historyBtn: ['click', toggleHistoryPanel],
+        entryForm: ['submit', handleFormSubmit],
+        formDate: ['input', () => clearFieldError(DOM.formDate)],
+        formDurationMinutes: ['input', () => clearFieldError(DOM.formDurationMinutes)],
+        formProjectId: ['change', () => clearFieldError(DOM.formProjectId)],
+        addEntryBtn: ['click', openEntryForm],
+        closeFormBtn: ['click', closeEntryForm],
+        cancelFormBtn: ['click', closeEntryForm],
+    };
+
+    Object.entries(listeners).forEach(([key, [event, handler]]) => {
+        DOM[key]?.addEventListener(event, handler);
     });
-    }
+
+    DOM.entryFormModal?.addEventListener('click', (e) => {
+        if (e.target.classList.contains('form-overlay')) closeEntryForm();
+    });
 }

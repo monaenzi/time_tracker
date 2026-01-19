@@ -2,7 +2,7 @@
   "config": {
     "configFile": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/playwright.config.js",
     "rootDir": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests",
-    "forbidOnly": false,
+    "forbidOnly": true,
     "fullyParallel": true,
     "globalSetup": null,
     "globalTeardown": null,
@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 4
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -35,9 +35,9 @@
       {
         "outputDir": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/test-results",
         "repeatEach": 1,
-        "retries": 0,
+        "retries": 2,
         "metadata": {
-          "actualWorkers": 4
+          "actualWorkers": 1
         },
         "id": "chromium",
         "name": "chromium",
@@ -54,7 +54,7 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.57.0",
-    "workers": 4,
+    "workers": 1,
     "webServer": {
       "command": "npm run dev",
       "url": "http://localhost:3000",
@@ -63,6 +63,125 @@
     }
   },
   "suites": [
+    {
+      "title": "core-functionality.spec.js",
+      "file": "core-functionality.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Core Functionality Tests",
+          "file": "core-functionality.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load JSON from API and display projects in dropdown",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1338,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-19T13:22:56.765Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "82707a9d8222aa8b10db-058aae6c137cf5b11bd8",
+              "file": "core-functionality.spec.js",
+              "line": 14,
+              "column": 3
+            },
+            {
+              "title": "should change timer state when user starts and stops",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2698,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-19T13:22:58.801Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "82707a9d8222aa8b10db-d851981aa1c463a10b00",
+              "file": "core-functionality.spec.js",
+              "line": 59,
+              "column": 3
+            },
+            {
+              "title": "should persist state after page reload",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3900,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-19T13:23:01.517Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "82707a9d8222aa8b10db-ade0143610412f8e6742",
+              "file": "core-functionality.spec.js",
+              "line": 118,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "issue-26/create-entry.spec.js",
       "file": "issue-26/create-entry.spec.js",
@@ -92,12 +211,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4719,
+                      "duration": 3253,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-18T22:47:08.361Z",
+                      "startTime": "2026-01-19T13:23:05.446Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -123,15 +242,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3201,
+                      "duration": 1771,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-18T22:47:08.401Z",
+                      "startTime": "2026-01-19T13:23:08.742Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -157,15 +276,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2625,
+                      "duration": 1793,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-18T22:47:08.366Z",
+                      "startTime": "2026-01-19T13:23:10.534Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -191,15 +310,15 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3278,
+                      "duration": 1914,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-18T22:47:08.410Z",
+                      "startTime": "2026-01-19T13:23:12.343Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -219,9 +338,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-18T22:47:06.737Z",
-    "duration": 6843.505999999999,
-    "expected": 4,
+    "startTime": "2026-01-19T13:22:55.645Z",
+    "duration": 18694.324,
+    "expected": 7,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
