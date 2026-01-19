@@ -92,9 +92,9 @@ test.describe('User Story #26: Create New Time Entry', () => {
     // Check that at least one entry exists
     await expect(listItems.first()).toBeVisible();
     
-    // Verify the entry contains the project ID and duration
+    // Verify the entry contains the project name and duration
     const firstEntry = listItems.first();
-    await expect(firstEntry).toContainText('Project 1');
+    await expect(firstEntry).toContainText('Web Design'); // Project name, not ID
     await expect(firstEntry).toContainText('30 min');
     
     // Step 11: Verify total time is updated

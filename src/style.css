@@ -160,26 +160,6 @@ body {
     overflow: hidden;
 }
 
-.search-box {
-    padding: 12px;
-    border-bottom: 1px solid var(--divider-color);
-}
-
-.search-box input {
-    width: 100%;
-    background: var(--bg-color);
-    border: 1px solid var(--divider-color);
-    border-radius: 8px;
-    padding: 8px 12px;
-    color: var(--text-main);
-    font-size: 14px;
-    outline: none;
-}
-
-.search-box input::placeholder {
-    color: var(--text-dim);
-}
-
 .projects-list {
     max-height: 300px;
     overflow-y: auto;
