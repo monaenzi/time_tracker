@@ -27,6 +27,8 @@ function selectProject(p) {
     document.getElementById('selectedProjectText').textContent = p.name;
     document.getElementById('activeProjectName').textContent = p.name.toUpperCase();
     document.getElementById('projectDropdown').style.display = 'none';
+
+    renderHistory();
 }
 
 // ==================== TIMER FUNKTIONEN ====================
@@ -101,28 +103,42 @@ async function populateProjectSelect() {
     });
 }
 
-function renderHistory() {
+function renderHistory(filterToday = false) {
     const list = document.getElementById('entryList');
-    const today = new Date().toISOString().split('T')[0];
-    const todaysData = timeEntries.filter(e => e.date === today);
+    const totalElement = document.getElementById('totalTime');
+    const titleElement = document.getElementById('historyTitle');
     
+    if (!selectedProjectId) {
+        list.innerHTML = '<li>Select a project to see history</li>';
+        totalElement.textContent = '0';
+        return;
+    }
+
+    let filteredData = timeEntries.filter(e => e.projectid == selectedProjectId);
+
+    if (filterToday) {
+        const today = new Date().toISOString().split('T')[0];
+        filteredData = filteredData.filter(e => e.date === today);
+    }
+
     list.innerHTML = '';
     let total = 0;
-    todaysData.forEach(e => {
-        total += e.durationMinutes;
-        list.innerHTML += `<li>Project ${e.projectid}: ${e.durationMinutes} min</li>`;
-    });
-    document.getElementById('totalTime').textContent = total;
-}
 
-document.getElementById('startStopBtn').onclick = function() {
-    if (!isRunning) {
-        if (!selectedProjectId) return alert("Select a project first!");
-        startTimer();
+    if (filteredData.length === 0) {
+        list.innerHTML = '<li>No entries found for this project.</li>';
     } else {
-        pauseTimer();
+        filteredData.forEach(e => {
+            total += e.durationMinutes;
+            list.innerHTML += `
+                <li>
+                    <span class="date">${e.date}</span>
+                    <span class="duration">${e.durationMinutes} min</span>
+                </li>`;
+        });
     }
-};
+
+    totalElement.textContent = total;
+}
 
 document.getElementById('resetBtn').onclick = function() {
     if (elapsedTime > 0) {
