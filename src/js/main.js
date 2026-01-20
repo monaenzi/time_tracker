@@ -483,6 +483,8 @@ const validators = {
         const duration = Number(value);
         if (isNaN(duration) || duration <= 0) return 'Duration must be a positive number';
         if (!Number.isInteger(duration)) return 'Duration must be a whole number';
+        const MAX_DURATION_MINUTES = 1440; // 24 hours maximum per entry
+        if (duration > MAX_DURATION_MINUTES) return `Duration cannot exceed ${MAX_DURATION_MINUTES} minutes (24 hours)`;
         return null;
     }
 };
