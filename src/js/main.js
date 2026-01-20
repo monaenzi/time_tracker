@@ -40,7 +40,7 @@ function selectProject(p) {
 function startTimer() {
     isRunning = true;
     startTime = new Date() - (elapsedTime * 1000);
-    document.getElementById('startStopBtn').textContent = '⏹';
+    document.getElementById('startStopBtn').textContent = '⏸︎';
     document.getElementById('statusText').textContent = 'Running';
     timerInterval = setInterval(updateUI, 1000);
 }
