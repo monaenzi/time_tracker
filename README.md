@@ -3,7 +3,7 @@
 A simple time tracking web application that allows users to track time spent on projects.
 Projects are loaded from a static JSON file, while time entries are stored locally in the browser.
 
-## Features
+## Sprint 1 Features
 
 - Select a project and start/stop time tracking
 
@@ -11,9 +11,9 @@ Projects are loaded from a static JSON file, while time entries are stored local
 
 - See how much time you worked today
 
-- Time entries persist after page reload
+- Create manual time entries via the “Add Entry” form
 
-- Delete (and optionally edit) time entries
+- Time entries persist after page reload
 
 - Automatic calculation of:
 
@@ -56,6 +56,9 @@ npm install
 ### 3. Start server
 
 ```bash
+npm start
+
+# or (development with auto-reload)
 npm run dev
 ```
 
@@ -91,10 +94,7 @@ npm run dev
 {
   "projectId": "string",
   "date": "YYYY-MM-DD",
-  "startTime": "HH:mm",
-  "endTime": "HH:mm",
-  "durationMinutes": 42,
-  "note": "optional text"
+  "durationMinutes": 42
 }
 ```
 
@@ -118,9 +118,7 @@ npm run dev
 
 - Overall total time for today
 
-- Delete button per entry
-
-- (Optional) Edit entry functionality
+- Manual entry creation via “Add Entry”
 
 ## Rules & Constraints
 
@@ -185,3 +183,18 @@ Test results and artifacts are stored in `test-results/`:
 - `playwright-report/` - HTML test report (auto-generated)
 
 See [tests/README.md](tests/README.md) for more details.
+
+## Known Limitations / Open Points
+
+- No edit/delete for time entries in the UI yet (entries can be created via timer and “Add Entry”, and persist via localStorage).
+- History view focuses on **today** (no multi-day overview yet).
+- Projects are **read-only** and loaded from the backend `projects.json` (no project management UI).
+- If the page is reloaded while a timer is running, the running timer state is not preserved (saved entries remain).
+
+## Team Members
+
+- Ali Zolfaghari
+- Alia Alamer
+- Markus Rossmann
+- Neil Carelse
+- Ramona Enzi

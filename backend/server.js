@@ -19,7 +19,6 @@ app.use(cors());
 // Serve index.html from src directory FIRST (before static middleware)
 app.get("/", (_, res) => {
   const indexPath = path.join(__dirname, '..', 'src', 'index.html');
-  console.log('Serving index.html from:', indexPath);
   res.sendFile(indexPath, (err) => {
     if (err) {
       console.error('Error sending index.html:', err);
