@@ -118,18 +118,29 @@ function deleteEntry(index) {
 function renderHistory() {
     const list = document.getElementById('entryList');
     const today = new Date().toISOString().split('T')[0];
-    const todaysData = timeEntries.filter(e => e.date === today);
-    
+ 
     list.innerHTML = '';
     let total = 0;
-    todaysData.forEach(e => {
+ 
+    timeEntries.forEach((e, index) => {
+        if (e.date !== today) return;
+ 
         total += e.durationMinutes;
-        list.innerHTML += `<li>${e.projectName}: ${e.durationMinutes} min</li>`;
+ 
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${e.projectName || `Project ${e.projectid}`}: ${e.durationMinutes} min
+            <button class="delete-btn">✕</button>
+        `;
+ 
+        li.querySelector('.delete-btn').onclick = () => deleteEntry(index);
+        list.appendChild(li);
     });
+ 
     document.getElementById('totalTime').textContent = total;
-
+ 
     const badge = document.getElementById('historyCount');
-    if (badge) badge.textContent = timeEntries.filter(e => e.date === today).length;
+    if (badge) badge.textContent = list.children.length;
 }
 
 document.getElementById('startStopBtn').onclick = function() {
