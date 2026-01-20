@@ -118,6 +118,7 @@ function deleteEntry(index) {
 function renderHistory() {
     const list = document.getElementById('entryList');
     const today = new Date().toISOString().split('T')[0];
+    const todaysData = timeEntries.filter(e => e.date === today);
     
     list.innerHTML = '';
     let total = 0;
