@@ -53,10 +53,14 @@
         </div>
     </div>
 
-    <div id="historySection" class="history-panel" style="display:none;">
-        <h3>Heute</h3>
+    <div id="historySection" class="history-panel" style="display:block;"> 
+        <h3 id="historyTitle">All Entries</h3>
+        <div class="filter-controls">
+            <button onclick="renderHistory(false)" class="filter-btn">All</button>
+            <button onclick="renderHistory(true)" class="filter-btn">Today</button>
+        </div>
         <ul id="entryList"></ul>
-        <div class="total">Total: <span id="totalTime">0</span> min</div>
+        <div class="total">Total for Project: <span id="totalTime">0</span> min</div>
     </div>
 
     <div id="entryFormModal" class="form-modal" style="display:none;">

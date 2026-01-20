@@ -463,3 +463,68 @@ body {
     margin-top: -10px;
     margin-bottom: 20px;
 }
+
+.history-panel {
+    margin-top: 20px;
+    border-top: 1px solid #444;
+    padding-top: 10px;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.filter-btn {
+    background: none;
+    border: 1px solid #555;
+    color: #888;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 8px;
+    margin-left: 5px;
+    border-radius: 12px;
+}
+
+.filter-btn:hover {
+    color: #fff;
+    border-color: #fff;
+}
+
+.history-panel li {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+    list-style: none;
+}
+
+.entry-date {
+    color: #888;
+    font-size: 14px;
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.entry-info {
+    color: #ccc;
+    font-size: 14px;
+    margin-left: 20px;
+    flex-grow: 1;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #da2727;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    transition: color 0.2s;
+}
+
+.delete-btn:hover {
+    color: #ff4444;
+}

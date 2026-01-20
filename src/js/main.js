@@ -31,6 +31,7 @@ function selectProject(p) {
     document.getElementById('selectedProjectText').textContent = p.name;
     document.getElementById('activeProjectName').textContent = p.name.toUpperCase();
     document.getElementById('projectDropdown').style.display = 'none';
+    renderHistory();
 }
 
 
@@ -115,32 +116,55 @@ function deleteEntry(index) {
     }
 }
 
-function renderHistory() {
+function renderHistory(filterToday = false) {
     const list = document.getElementById('entryList');
-    const today = new Date().toISOString().split('T')[0];
+    const totalElement = document.getElementById('totalTime');
  
+    if (!selectedProjectId) {
+        list.innerHTML = '<li>Please select a project to view entries.</li>';
+        totalElement.textContent = '0';
+        return;
+    }
+
+    let filteredData = timeEntries.filter(e => e.projectid == selectedProjectId);
+
+    if (filterToday) {
+        const today = new Date().toISOString().split('T')[0];
+        filteredData = filteredData.filter(e => e.date === today);
+    }
+
+    filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     list.innerHTML = '';
     let total = 0;
  
-    timeEntries.forEach((e, index) => {
-        if (e.date !== today) return;
- 
-        total += e.durationMinutes;
- 
-        const li = document.createElement('li');
-        li.innerHTML = `
-            ${e.projectName || `Project ${e.projectid}`}: ${e.durationMinutes} min
-            <button class="delete-btn">✕</button>
-        `;
- 
-        li.querySelector('.delete-btn').onclick = () => deleteEntry(index);
-        list.appendChild(li);
-    });
- 
-    document.getElementById('totalTime').textContent = total;
+    if (filteredData.length === 0) {
+            list.innerHTML = '<li>No entries found for this project.</li>';
+    } else {
+        filteredData.forEach((e) => {
+            total += e.durationMinutes;
+
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <div class="entry-date">${e.date}</div>
+                <div class="entry-info">
+                        <strong> ${e.projectName || `Project ${e.projectid}`}</strong>: ${e.durationMinutes} min
+                </div>
+                <button class="delete-btn">✕</button>
+            `;
+
+            li.querySelector('.delete-btn').onclick = () => {
+                const originalIndex = timeEntries.indexOf(e);
+                deleteEntry(originalIndex);
+            };
+            list.appendChild(li);
+        });
+    }
+
+    totalElement.textContent = total;
  
     const badge = document.getElementById('historyCount');
-    if (badge) badge.textContent = list.children.length;
+    if (badge) badge.textContent = filteredData.length;
 }
 
 document.getElementById('startStopBtn').onclick = function() {
