@@ -16,7 +16,7 @@
                 <span class="dot" id="tagDot"></span>
                 <span id="activeProjectName">DEEP WORK</span>
             </div>
-            <div class="time-number" id="timerDisplay">00:00</div>
+            <div class="time-number" id="timerDisplay" data-testid="timer">00:00</div>
             <div class="status-label">
                 <span class="dot-small orange"></span>
                 <span id="statusText">Paused</span>
@@ -43,17 +43,17 @@
             <div class="v-divider"></div>
 
             <div class="controls">
-                <button id="startStopBtn" class="icon-btn" title="Start/Stop">▶</button>
-                <button id="resetBtn" class="icon-btn" title="Add current Entry">⤵</button>
+                <button id="startStopBtn" class="icon-btn" title="Start/Stop" data-testid="start-stop-btn">▶</button>
+                <button id="resetBtn" class="icon-btn" title="Add current Entry" data-testid="end-session-btn">⤵</button>
                 <div class="v-divider"></div>
-                <button id="historyBtn" class="icon-btn" title="History">⏲︎<span class="badge" id="historyCount"></span></button>
+                <button id="historyBtn" class="icon-btn" title="History" data-testid="history-btn">⏲︎<span class="badge" id="historyCount"></span></button>
                 <div class="v-divider"></div>
                 <button id="addEntryBtn" class="icon-btn" title="Add Entry">＋</button>
             </div>
         </div>
     </div>
 
-    <div id="historySection" class="history-panel" style="display:block;"> 
+    <div id="historySection" class="history-panel" style="display:block;" data-testid="history-list"> 
         <h3 id="historyTitle">All Entries</h3>
         <div class="filter-controls">
             <button onclick="renderHistory(false)" class="filter-btn">All</button>
