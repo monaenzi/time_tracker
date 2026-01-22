@@ -2,7 +2,7 @@ let startTime;
 let timerInterval;
 let isRunning = false;
 let selectedProjectId = null;
-let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];    
+let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];
 let elapsedTime = 0;
 let selectedProjectName = '';
 
@@ -13,7 +13,7 @@ async function fetchProjects() {
     const res = await fetch('http://localhost:3000/api/projects');
     const projects = await res.json();
     const list = document.getElementById('projectsList');
-    
+
     list.innerHTML = ''; // Liste leeren
     projects.forEach(p => {
         const div = document.createElement('div');
@@ -48,7 +48,7 @@ function pauseTimer() {
     isRunning = false;
     clearInterval(timerInterval);
     elapsedTime = Math.floor((new Date() - startTime) / 1000);
-    
+
     document.getElementById('startStopBtn').textContent = '▶';
     document.getElementById('statusText').textContent = 'Paused';
 }
@@ -56,7 +56,7 @@ function pauseTimer() {
 function stopTimer() {
     isRunning = false;
     clearInterval(timerInterval);
-    const duration = Math.round(elapsedTime / 60);  
+    const duration = Math.round(elapsedTime / 60);
 
     const entry = {
         projectid: selectedProjectId,
@@ -64,10 +64,10 @@ function stopTimer() {
         date: new Date().toISOString().split('T')[0],
         durationMinutes: duration
     };
-    
+
     timeEntries.push(entry);
-    localStorage.setItem('timeEntries', JSON.stringify(timeEntries));    
-    
+    localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+
     elapsedTime = 0;
     document.getElementById('timerDisplay').textContent = '00:00';
     document.getElementById('startStopBtn').textContent = '▶';
@@ -79,7 +79,7 @@ function updateUI() {
     const diff = Math.floor((new Date() - startTime) / 1000);
     const m = String(Math.floor(diff / 60)).padStart(2, '0');
     const s = String(diff % 60).padStart(2, '0');
-    document.getElementById('timerDisplay').textContent = `${m}:${s}`;  
+    document.getElementById('timerDisplay').textContent = `${m}:${s}`;
 }
 
 
@@ -97,7 +97,7 @@ async function populateProjectSelect() {
     const res = await fetch('http://localhost:3000/api/projects');
     const projects = await res.json();
     const select = document.getElementById('formProjectId');
-    
+
     select.innerHTML = '<option value="">Select Project...</option>';
     projects.forEach(p => {
         const opt = document.createElement('option');
@@ -118,32 +118,32 @@ function deleteEntry(index) {
 function renderHistory() {
     const list = document.getElementById('entryList');
     const today = new Date().toISOString().split('T')[0];
- 
+
     list.innerHTML = '';
     let total = 0;
- 
+
     timeEntries.forEach((e, index) => {
         if (e.date !== today) return;
- 
+
         total += e.durationMinutes;
- 
+
         const li = document.createElement('li');
         li.innerHTML = `
             ${e.projectName || `Project ${e.projectid}`}: ${e.durationMinutes} min
-            <button class="delete-btn">✕</button>
+            <button class="delete-btn" data-testid="delete-btn">✕</button>
         `;
- 
+
         li.querySelector('.delete-btn').onclick = () => deleteEntry(index);
         list.appendChild(li);
     });
- 
+
     document.getElementById('totalTime').textContent = total;
- 
+
     const badge = document.getElementById('historyCount');
     if (badge) badge.textContent = list.children.length;
 }
 
-document.getElementById('startStopBtn').onclick = function() {
+document.getElementById('startStopBtn').onclick = function () {
     if (!isRunning) {
         if (!selectedProjectId) return alert("Select a project first!");
         startTimer();
@@ -152,7 +152,7 @@ document.getElementById('startStopBtn').onclick = function() {
     }
 };
 
-document.getElementById('resetBtn').onclick = function() {
+document.getElementById('resetBtn').onclick = function () {
     if (elapsedTime > 0) {
         stopTimer();
     }
@@ -176,7 +176,7 @@ if (addBtn) {
 document.getElementById('closeFormBtn').onclick = closeModal;
 document.getElementById('cancelFormBtn').onclick = closeModal;
 
-document.getElementById('entryForm').onsubmit = function(e) {
+document.getElementById('entryForm').onsubmit = function (e) {
     e.preventDefault();
 
     const select = document.getElementById('formProjectId');
