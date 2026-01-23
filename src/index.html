@@ -43,17 +43,20 @@
             <div class="v-divider"></div>
 
             <div class="controls">
-                <button id="startStopBtn" class="icon-btn" title="Start/Stop" data-testid="start-stop-btn">▶</button>
-                <button id="resetBtn" class="icon-btn" title="Add current Entry" data-testid="end-session-btn">⤵</button>
+                <button type="button" id="startStopBtn" class="icon-btn" title="Start/Stop"
+                    data-testid="start-stop-btn">▶</button>
+                <button type="button" id="resetBtn" class="icon-btn" title="Add current Entry"
+                    data-testid="end-session-btn">⤵</button>
                 <div class="v-divider"></div>
-                <button id="historyBtn" class="icon-btn" title="History" data-testid="history-btn">⏲︎<span class="badge" id="historyCount"></span></button>
+                <button type="button" id="historyBtn" class="icon-btn" title="History" data-testid="history-btn">⏲︎<span
+                        class="badge" id="historyCount"></span></button>
                 <div class="v-divider"></div>
-                <button id="addEntryBtn" class="icon-btn" title="Add Entry">＋</button>
+                <button type="button" id="addEntryBtn" class="icon-btn" title="Add Entry">＋</button>
             </div>
         </div>
     </div>
 
-    <div id="historySection" class="history-panel" style="display:block;" data-testid="history-list"> 
+    <div id="historySection" class="history-panel" style="display:block;" data-testid="history-list">
         <h3 id="historyTitle">All Entries</h3>
         <div class="filter-controls">
             <button onclick="renderHistory(false)" class="filter-btn">All</button>
@@ -81,25 +84,13 @@
 
                 <div class="form-group">
                     <label for="formDate">Date</label>
-                    <input 
-                        type="date" 
-                        id="formDate" 
-                        name="date" 
-                        required
-                    />
+                    <input type="date" id="formDate" name="date" required />
                 </div>
 
                 <div class="form-group">
                     <label for="formDurationMinutes">Duration (minutes)</label>
-                    <input 
-                        type="number" 
-                        id="formDurationMinutes" 
-                        name="durationMinutes" 
-                        min="1"
-                        step="1"
-                        placeholder="e.g. 30"
-                        required
-                    />
+                    <input type="number" id="formDurationMinutes" name="durationMinutes" min="1" step="1"
+                        placeholder="e.g. 30" required />
                 </div>
                 <div id="formError" class="error-message" style="display:none;"></div>
                 <div id="formSuccess" class="success-message" style="display:none;"></div>

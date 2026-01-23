@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { start } from 'node:repl';
+import { createMockEntry } from './test-utils';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('index.html');
@@ -25,11 +25,14 @@ test('Projects are loaded and are visible in the list', async ({ page }) => {
   await expect(list).toContainText('Consulting');
 });
 
+/**
+ * Start and stop an entry
+ */
 test('start and stop an entry', async ({ page }) => {
 
   page.on('load', () => {
-    console.error('ALARM: Die Seite hat sich neu geladen!');
-    throw new Error('Die Seite hat sich unerwartet neu geladen! Test abgebrochen.');
+    console.error('RELOAD: Site reloaded');
+    throw new Error('Site reloaded. Test cancelled.');
   });
 
   const trigger = page.getByTestId('project-trigger');
@@ -63,4 +66,85 @@ test('start and stop an entry', async ({ page }) => {
   await expect(entryList).toContainText('Web Design');
 
   await expect(entryList.locator('li')).toHaveCount(1);
+});
+
+/**
+ * Entry stays in history list after page refresh
+ */
+test('Entry stays in history list after page refresh', async ({ page }) => {
+  const trigger = page.getByTestId('project-trigger');
+  await trigger.click();
+
+  const menu = page.getByTestId('dropdown-menu');
+  await expect(menu).toBeVisible();
+
+  const list = page.getByTestId('projects-list');
+  await expect(list).not.toBeEmpty();
+  await list.getByText('Web Design').click();
+
+  const activeProjectDisplay = page.locator('#selectedProjectText');
+  await expect(activeProjectDisplay).toHaveText('Web Design');
+
+  await expect(menu).toBeHidden();
+
+  const startStopbtn = page.getByTestId('start-stop-btn');
+  await startStopbtn.click();
+  await page.waitForTimeout(3000);
+  await startStopbtn.click();
+
+  const endSessionbtn = page.getByTestId('end-session-btn');
+  await endSessionbtn.click();
+
+  const listbtn = page.getByTestId('history-btn');
+  await listbtn.click();
+
+  const entryList = page.getByTestId('history-list');
+  await expect(entryList).toBeVisible();
+  await expect(entryList).toContainText('Web Design');
+
+  await expect(entryList.locator('li')).toHaveCount(1);
+
+  await page.reload();
+
+  await listbtn.click();
+
+  await expect(entryList).toBeVisible();
+  await expect(entryList.locator('li')).toHaveCount(1);
+});
+
+/**
+ * Delete entry and update time sum
+ */
+test('Delete entry and update time sum', async ({ page }) => {
+  const entryToDelete = createMockEntry({
+    projectName: "DELETE ME",
+    durationMinutes: 60
+  });
+
+  const storageData = JSON.stringify([entryToDelete]);
+
+  await page.addInitScript((data) => {
+    window.localStorage.setItem('timeEntries', data);
+  }, storageData);
+
+  await page.goto('index.html');
+
+  const listbtn = page.getByTestId('history-btn');
+  await listbtn.click();
+
+  const entryList = page.getByTestId('history-list');
+  await expect(entryList).toBeVisible();
+  await expect(entryList).toContainText('DELETE ME');
+
+  // handle browser pop-up
+  page.on('dialog', async dialog => {
+    expect(dialog.message()).toContain('Are you sure');
+    await dialog.accept();
+  });
+
+  const deletebtn = page.getByTestId('delete-btn');
+  await deletebtn.click()
+
+  await expect(entryList).not.toContainText('DELETE ME');
+  await expect(entryList.locator('li')).toHaveCount(0);
 });
