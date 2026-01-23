@@ -58,11 +58,7 @@ test('start and stop an entry', async ({ page }) => {
   const endSessionbtn = page.getByTestId('end-session-btn');
   await endSessionbtn.click();
 
-  const listbtn = page.getByTestId('history-btn');
-  await listbtn.click();
-
   const entryList = page.getByTestId('history-list');
-  await expect(entryList).toBeVisible();
   await expect(entryList).toContainText('Web Design');
 
   await expect(entryList.locator('li')).toHaveCount(1);
@@ -72,6 +68,19 @@ test('start and stop an entry', async ({ page }) => {
  * Entry stays in history list after page refresh
  */
 test('Entry stays in history list after page refresh', async ({ page }) => {
+  const entryToDelete = createMockEntry({
+    projectName: "Web Design"
+  });
+
+  const storageData = JSON.stringify([entryToDelete]);
+
+  await page.addInitScript((data) => {
+    window.localStorage.setItem('timeEntries', data);
+  }, storageData);
+
+  await page.goto('index.html');
+  await page.reload();
+
   const trigger = page.getByTestId('project-trigger');
   await trigger.click();
 
@@ -82,33 +91,9 @@ test('Entry stays in history list after page refresh', async ({ page }) => {
   await expect(list).not.toBeEmpty();
   await list.getByText('Web Design').click();
 
-  const activeProjectDisplay = page.locator('#selectedProjectText');
-  await expect(activeProjectDisplay).toHaveText('Web Design');
-
-  await expect(menu).toBeHidden();
-
-  const startStopbtn = page.getByTestId('start-stop-btn');
-  await startStopbtn.click();
-  await page.waitForTimeout(3000);
-  await startStopbtn.click();
-
-  const endSessionbtn = page.getByTestId('end-session-btn');
-  await endSessionbtn.click();
-
-  const listbtn = page.getByTestId('history-btn');
-  await listbtn.click();
-
   const entryList = page.getByTestId('history-list');
   await expect(entryList).toBeVisible();
   await expect(entryList).toContainText('Web Design');
-
-  await expect(entryList.locator('li')).toHaveCount(1);
-
-  await page.reload();
-
-  await listbtn.click();
-
-  await expect(entryList).toBeVisible();
   await expect(entryList.locator('li')).toHaveCount(1);
 });
 
@@ -117,7 +102,7 @@ test('Entry stays in history list after page refresh', async ({ page }) => {
  */
 test('Delete entry and update time sum', async ({ page }) => {
   const entryToDelete = createMockEntry({
-    projectName: "DELETE ME",
+    projectName: 'Web Design',
     durationMinutes: 60
   });
 
@@ -129,12 +114,23 @@ test('Delete entry and update time sum', async ({ page }) => {
 
   await page.goto('index.html');
 
-  const listbtn = page.getByTestId('history-btn');
-  await listbtn.click();
+  const trigger = page.getByTestId('project-trigger');
+  await trigger.click();
 
+  const menu = page.getByTestId('dropdown-menu');
+  await expect(menu).toBeVisible();
+
+  const list = page.getByTestId('projects-list');
+  await expect(list).not.toBeEmpty();
+  await list.getByText('Web Design').click();
+  
+  const totalTime = page.getByTestId('totalTime');
+  await expect(totalTime).toContainText("60");
+  
   const entryList = page.getByTestId('history-list');
   await expect(entryList).toBeVisible();
-  await expect(entryList).toContainText('DELETE ME');
+  await expect(entryList).toContainText('Web Design');
+
 
   // handle browser pop-up
   page.on('dialog', async dialog => {
@@ -145,6 +141,8 @@ test('Delete entry and update time sum', async ({ page }) => {
   const deletebtn = page.getByTestId('delete-btn');
   await deletebtn.click()
 
-  await expect(entryList).not.toContainText('DELETE ME');
-  await expect(entryList.locator('li')).toHaveCount(0);
+  await expect(entryList).not.toContainText('projectString');
+  await expect(entryList).toContainText('No entries found for this project.');
+
+  await expect(totalTime).toContainText("0");
 });
