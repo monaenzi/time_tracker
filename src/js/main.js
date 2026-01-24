@@ -153,6 +153,9 @@ function openDetailModal(entry) {
     notesDisplay.textContent = entry.notes || "No notes for this entry.";
     
     document.getElementById('detailModal').style.display = 'flex';
+
+    const body = document.querySelector('#detailModal .detail-body');
+    if (body) body.scrollTop = 0;
 }
 
 function closeDetailModal() {
