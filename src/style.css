@@ -339,6 +339,7 @@ body {
     width: 100%;
     max-width: 480px;
     max-height: 85vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     padding: 32px;
@@ -347,6 +348,45 @@ body {
     box-shadow: 0 32px 64px rgba(0, 0, 0, 0.6);
     z-index: 1001;
     animation: modalAppear 0.3s ease-out;
+}
+
+#entryForm {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.form-inputs-wrapper {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-right: 8px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 20px;
+    background: var(--card-bg);
+    border-top: 1px solid var(--divider-color);
+}
+
+.form-inputs-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.form-inputs-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.form-inputs-wrapper::-webkit-scrollbar-thumb {
+    background: var(--divider-color);
+    border-radius: 10px;
+}
+
+.form-inputs-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--text-dim);
 }
 
 @keyframes modalAppear {
@@ -433,12 +473,6 @@ body {
 
 .form-group textarea::placeholder {
     color: var(--text-dim);
-}
-
-.form-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 40px;
 }
 
 .btn-base {

@@ -72,37 +72,39 @@
         <div class="form-container">
             <div class="form-header">
                 <h3>Create New Time Entry</h3>
-                <button id="closeFormBtn" class="close-btn">x</button>
+                <button id="closeFormBtn" class="close-btn">✕</button>
             </div>
 
             <form id="entryForm">
-                <div class="form-group">
-                    <label for="formProjectId">Web Design</label>
-                    <select id="formProjectId" name="projectId" required>
-                        <option value="">Select Project...</option>
-                    </select>
-                </div>
+                <div class="form-inputs-wrapper">
+                    <div class="form-group">
+                        <label for="formProjectId">Web Design</label>
+                        <select id="formProjectId" name="projectId" required>
+                            <option value="">Select Project...</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="formDate">Date</label>
-                    <input type="date" id="formDate" name="date" required />
-                </div>
+                    <div class="form-group">
+                        <label for="formDate">Date</label>
+                        <input type="date" id="formDate" name="date" required />
+                    </div>
 
-                <div class="form-group">
-                    <label for="formDurationMinutes">Duration (minutes)</label>
-                    <input type="number" id="formDurationMinutes" name="durationMinutes" min="1" step="1"
-                        placeholder="e.g. 30" required />
-                </div>
-                <div class="form-group">
-                    <label for="formNotes">Notes</label>
-                    <textarea id="formNotes" name="notes" placeholder="Optional notes..."></textarea>
-                </div>
-                <div id="formError" class="error-message" style="display:none;"></div>
-                <div id="formSuccess" class="success-message" style="display:none;"></div>
+                    <div class="form-group">
+                        <label for="formDurationMinutes">Duration (minutes)</label>
+                        <input type="number" id="formDurationMinutes" name="durationMinutes" min="1" step="1"
+                            placeholder="e.g. 30" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="formNotes">Notes</label>
+                        <textarea id="formNotes" name="notes" placeholder="Optional notes..."></textarea>
+                    </div>
+                    <div id="formError" class="error-message" style="display:none;"></div>
+                    <div id="formSuccess" class="success-message" style="display:none;"></div>
 
-                <div class="form-actions">
-                    <button type="button" id="cancelFormBtn" class="btn-secondary">Cancel</button>
-                    <button type="submit" id="submitFormBtn" class="btn-base btn-primary">Create Entry</button>
+                    <div class="form-actions">
+                        <button type="button" id="cancelFormBtn" class="btn-secondary">Cancel</button>
+                        <button type="submit" id="submitFormBtn" class="btn-base btn-primary">Create Entry</button>
+                    </div>
                 </div>
             </form>
         </div>
