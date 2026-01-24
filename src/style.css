@@ -408,6 +408,30 @@ body {
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
+.form-group textarea {
+    width: 100%;
+    background: var(--bg-color);
+    border: 1px solid var(--divider-color);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text-main);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
+.form-group textarea:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.form-group textarea::placeholder {
+    color: var(--text-dim);
+}
+
 .form-actions {
     display: flex;
     gap: 12px;
@@ -527,4 +551,35 @@ body {
 
 .delete-btn:hover {
     color: #ff4444;
+}
+
+.entry-item {
+    flex-grow: 1;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 7px;
+    transition: background 0.2s;
+}
+
+.entry-item:hover {
+    background-color: rgba(0, 0, 0, 0.164);
+}
+
+.detail-body p {
+    margin: 10px 0;
+    font-size: 1.1em;
+}
+
+.notes-display {
+    margin-top: 8px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 6px;
+    white-space: pre-wrap;
+    min-height: 50px;
+    font-style: italic;
+}
+
+.detail-notes-section {
+    margin-top: 20px;
 }

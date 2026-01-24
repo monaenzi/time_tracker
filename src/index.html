@@ -93,6 +93,10 @@
                     <input type="number" id="formDurationMinutes" name="durationMinutes" min="1" step="1"
                         placeholder="e.g. 30" required />
                 </div>
+                <div class="form-group">
+                    <label for="formNotes">Notes</label>
+                    <textarea id="formNotes" name="notes" placeholder="Optional notes..."></textarea>
+                </div>
                 <div id="formError" class="error-message" style="display:none;"></div>
                 <div id="formSuccess" class="success-message" style="display:none;"></div>
 
@@ -101,6 +105,26 @@
                     <button type="submit" id="submitFormBtn" class="btn-base btn-primary">Create Entry</button>
                 </div>
             </form>
+        </div>
+    </div>
+    <div id="detailModal" class="form-modal" style="display:none;">
+        <div class="form-overlay" id="detailOverlay"></div>
+        <div class="form-container">
+            <div class="form-header">
+                <h3 id="detailProjectName">Project Details</h3>
+                <button id="closeDetailBtn" class="close-btn">✕</button>
+            </div>
+            <div class="detail-body">
+                <p><strong>Date:</strong> <span id="detailDate"></span></p>
+                <p><strong>Duration:</strong> <span id="detailDuration"></span> minutes</p>
+                <div class="detail-notes-section">
+                    <strong>Notes:</strong>
+                    <div id="detailNotes" class="notes-display"></div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" id="closeDetailBottomBtn" class="btn-base btn-primary">Close</button>
+            </div>
         </div>
     </div>
 </body>

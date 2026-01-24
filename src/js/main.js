@@ -144,6 +144,25 @@ function deleteEntry(index) {
     }
 }
 
+function openDetailModal(entry) {
+    document.getElementById('detailProjectName').textContent = entry.projectName || "Project Details";
+    document.getElementById('detailDate').textContent = entry.date;
+    document.getElementById('detailDuration').textContent = entry.durationMinutes;
+    
+    const notesDisplay = document.getElementById('detailNotes');
+    notesDisplay.textContent = entry.notes || "No notes for this entry.";
+    
+    document.getElementById('detailModal').style.display = 'flex';
+}
+
+function closeDetailModal() {
+    document.getElementById('detailModal').style.display = 'none';
+}
+
+document.getElementById('closeDetailBtn').onclick = closeDetailModal;
+document.getElementById('closeDetailBottomBtn').onclick = closeDetailModal;
+document.getElementById('detailOverlay').onclick = closeDetailModal;
+
 function renderHistory(filterToday = false) {
     const list = document.getElementById('entryList');
     const totalElement = document.getElementById('totalTime');
@@ -173,15 +192,23 @@ function renderHistory(filterToday = false) {
             total += e.durationMinutes;
 
             const li = document.createElement('li');
+            li.className = 'entry-item';
             li.innerHTML = `
-                <div class="entry-date">${e.date}</div>
-                <div class="entry-info">
-                        <strong> ${e.projectName || `Project ${e.projectid}`}</strong>: ${e.durationMinutes} min
+                <div class="entry-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div class="entry-main-content" style="flex-grow: 1; cursor: pointer;">
+                        <span class="entry-date">${e.date}</span>
+                        <span class="entry-info">
+                            <strong>${e.projectName || `Project ${e.projectid}`}</strong>: ${e.durationMinutes} min
+                        </span>
+                    </div>
+                    <button class="delete-btn" data-testid="delete-btn" style="margin-left: 10px;">✕</button>
                 </div>
-                <button class="delete-btn" data-testid="delete-btn">✕</button>
             `;
 
+            li.querySelector('.entry-main-content').onclick = () => openDetailModal(e);
+
             li.querySelector('.delete-btn').onclick = () => {
+                event.stopPropagation();
                 const originalIndex = timeEntries.indexOf(e);
                 deleteEntry(originalIndex);
             };
@@ -238,7 +265,8 @@ document.getElementById('entryForm').onsubmit = function (e) {
         projectid: select.value,
         projectName: selectedOption.textContent,
         date: document.getElementById('formDate').value,
-        durationMinutes: parseInt(document.getElementById('formDurationMinutes').value)
+        durationMinutes: parseInt(document.getElementById('formDurationMinutes').value),
+        notes: document.getElementById('formNotes').value
     };
 
     timeEntries.push(entry);
