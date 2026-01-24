@@ -108,6 +108,34 @@ async function populateProjectSelect() {
     });
 }
 
+
+function resetAllEntries() {
+
+    if (!selectedProjectId) {
+        alert("Please select a project first");
+        return;
+    }
+
+    const confirmation = confirm(`Are you sure you want to delete all entries for the project "${selectedProjectName}"?`);
+    
+    if (confirmation) {
+        timeEntries = timeEntries.filter(e => e.projectid != selectedProjectId);
+        
+        localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+
+        renderHistory();
+        
+        alert(`All entries for "${selectedProjectName}" have been deleted.`);
+    }
+}
+
+const resetAllBtn = document.getElementById('resetAllEntriesBtn');
+if (resetAllBtn) {
+    resetAllBtn.onclick = resetAllEntries;
+}
+
+
+
 function deleteEntry(index) {
     if (confirm("Are you sure you want to delete this entry?")) {
         timeEntries.splice(index, 1);
