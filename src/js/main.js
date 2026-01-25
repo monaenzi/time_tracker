@@ -57,13 +57,21 @@ function pauseTimer() {
 function stopTimer() {
     isRunning = false;
     clearInterval(timerInterval);
+    const now = new Date();
+    const startedAt = new Date(now.getTime() - (elapsedTime * 1000));
+    const formatTime = (date) =>
+        date.getHours().toString().padStart(2, '0') + ":" +
+        date.getMinutes().toString().padStart(2, '0');
     const duration = Math.round(elapsedTime / 60);
 
     const entry = {
         projectid: selectedProjectId,
         projectName: selectedProjectName,
         date: new Date().toISOString().split('T')[0],
-        durationMinutes: duration
+        startTime: formatTime(startedAt),
+        endTime: formatTime(now),
+        durationMinutes: duration,
+        notes: ''
     };
 
     timeEntries.push(entry);
