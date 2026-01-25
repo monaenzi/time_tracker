@@ -158,6 +158,8 @@ function deleteEntry(index) {
 function openDetailModal(entry) {
     document.getElementById('detailProjectName').textContent = entry.projectName || "Project Details";
     document.getElementById('detailDate').textContent = entry.date;
+    document.getElementById('detailStartTime').textContent = entry.startTime || "--:--";
+    document.getElementById('detailEndTime').textContent = entry.endTime || "--:--";
     document.getElementById('detailDuration').textContent = entry.durationMinutes;
     
     const notesDisplay = document.getElementById('detailNotes');
