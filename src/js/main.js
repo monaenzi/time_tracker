@@ -102,6 +102,12 @@ function calculateMinutes(start, end) {
     return diff;
 }
 
+function isFuture(dateStr, timeStr) {
+    const now = new Date();
+    const entryDateTime = new Date(`${dateStr}T${timeStr}`);
+    return entryDateTime > now;
+}
+
 
 function openModal() {
     document.getElementById('entryFormModal').style.display = 'flex';
@@ -284,20 +290,48 @@ document.getElementById('entryForm').onsubmit = function (e) {
 
     const select = document.getElementById('formProjectId');
     const selectedOption = select.options[select.selectedIndex];
-
+    const date = document.getElementById('formDate').value;
     const startTimeVal = document.getElementById('formStartTime').value;
     const endTimeVal = document.getElementById('formEndTime').value;
+    const notes = document.getElementById('formNotes').value;
+
+    const errorEl = document.getElementById('formError');
+    if (errorEl) errorEl.style.display = 'none';
+
+    const now = new Date();
+    const entryDateTime = new Date(`${date}T${endTimeVal}`);
+
+    if (entryDateTime > now) {
+        if (errorEl) {
+            errorEl.textContent = "Error: You can't track time in the future!";
+            errorEl.style.display = 'block';
+        } else {
+            alert("Error: You can't track time in the future!");
+        }
+        return;
+    }
+
+    if (startTimeVal >= endTimeVal) {
+        const msg = "Error: End time must be after start time on the same day!";
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return;
+    }
 
     const duration = calculateMinutes(startTimeVal, endTimeVal);
 
     const entry = {
         projectid: select.value,
         projectName: selectedOption.textContent,
-        date: document.getElementById('formDate').value,
+        date: date,
         startTime: startTimeVal,
         endTime: endTimeVal,
         durationMinutes: duration,
-        notes: document.getElementById('formNotes').value
+        notes: notes
     };
 
     timeEntries.push(entry);
