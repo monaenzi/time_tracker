@@ -83,6 +83,17 @@ function updateUI() {
     document.getElementById('timerDisplay').textContent = `${m}:${s}`;
 }
 
+function calculateMinutes(start, end) {
+    const [startH, startM] = start.split(':').map(Number);
+    const [endH, endM] = end.split(':').map(Number);
+    
+    let diff = (endH * 60 + endM) - (startH * 60 + startM);
+    
+    if (diff < 0) diff += 24 * 60; 
+    
+    return diff;
+}
+
 
 function openModal() {
     document.getElementById('entryFormModal').style.display = 'flex';
@@ -264,11 +275,18 @@ document.getElementById('entryForm').onsubmit = function (e) {
     const select = document.getElementById('formProjectId');
     const selectedOption = select.options[select.selectedIndex];
 
+    const startTimeVal = document.getElementById('formStartTime').value;
+    const endTimeVal = document.getElementById('formEndTime').value;
+
+    const duration = calculateMinutes(startTimeVal, endTimeVal);
+
     const entry = {
         projectid: select.value,
         projectName: selectedOption.textContent,
         date: document.getElementById('formDate').value,
-        durationMinutes: parseInt(document.getElementById('formDurationMinutes').value),
+        startTime: startTimeVal,
+        endTime: endTimeVal,
+        durationMinutes: duration,
         notes: document.getElementById('formNotes').value
     };
 
