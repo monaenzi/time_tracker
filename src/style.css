@@ -9,6 +9,7 @@
     --hover-bg: #25262b;
     --hover-btn-color: #fff;
     --hover-btn-border-color: #fff;
+    --create-entry-icons: invert(100%) brightness(100%);
 }
 
 
@@ -23,6 +24,7 @@
     --hover-bg: #eae8e1;
     --hover-btn-color: #2c2825;
     --hover-btn-border-color: #2c2825;
+    --create-entry-icons: none;
 }
 
 * {
@@ -306,7 +308,7 @@ body {
 }
 
 input::-webkit-calendar-picker-indicator {
-    filter: invert(100%) brightness(100%);
+    filter: var(--create-entry-icons);
     cursor: pointer;
 }
 
@@ -661,6 +663,7 @@ input::-webkit-calendar-picker-indicator {
 .detail-body::-webkit-scrollbar-thumb:hover {
     background: var(--text-dim);
 }
+
 #detailDate {
     font-size: 14px;
     background-color: #22c55e;
