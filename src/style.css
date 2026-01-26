@@ -7,6 +7,22 @@
     --accent-orange: #f59e0b;
     --divider-color: #2e2f34;
     --hover-bg: #25262b;
+    --hover-btn-color: #fff;
+    --hover-btn-border-color: #fff;
+}
+
+
+.light-theme {
+    --bg-color: #f0eee6;
+    --card-bg: #fbfaf8;
+    --text-main: #2c2825;
+    --text-dim: #6f6b66;
+    --accent-blue: #4f46e5;
+    --accent-orange: #d97706;
+    --divider-color: #dedbd3;
+    --hover-bg: #eae8e1;
+    --hover-btn-color: #2c2825;
+    --hover-btn-border-color: #2c2825;
 }
 
 * {
@@ -34,7 +50,8 @@ body {
     padding: 60px 40px 40px;
     border-radius: 32px;
     border: 1px solid var(--divider-color);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+    position: relative;
 }
 
 .main-display {
@@ -143,7 +160,7 @@ body {
     margin-top: 10px;
     display: none;
     z-index: 100;
-    box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
     overflow: hidden;
 }
 
@@ -396,8 +413,15 @@ input::-webkit-calendar-picker-indicator {
 }
 
 @keyframes modalAppear {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .form-header {
@@ -438,7 +462,7 @@ input::-webkit-calendar-picker-indicator {
     font-weight: 500;
 }
 
-.form-group input, 
+.form-group input,
 .form-group select {
     width: 100%;
     background: var(--bg-color);
@@ -451,7 +475,7 @@ input::-webkit-calendar-picker-indicator {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-group input:focus, 
+.form-group input:focus,
 .form-group select:focus {
     border-color: var(--accent-blue);
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
@@ -533,7 +557,6 @@ input::-webkit-calendar-picker-indicator {
 
 .history-panel {
     margin-top: 20px;
-    border-top: 1px solid #444;
     padding-top: 10px;
 }
 
@@ -556,8 +579,8 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .filter-btn:hover {
-    color: #fff;
-    border-color: #fff;
+    color: var(--hover-btn-color);
+    border-color: var(--hover-btn-border-color);
 }
 
 .history-panel li {
@@ -653,7 +676,7 @@ input::-webkit-calendar-picker-indicator {
 .notes-display {
     margin-top: 8px;
     padding: 12px;
-    background: rgba(0, 0, 0, 0.85);
+    background: var(--card-bg);
     border-radius: 6px;
     white-space: pre-wrap;
     min-height: 50px;
@@ -662,4 +685,34 @@ input::-webkit-calendar-picker-indicator {
 
 .detail-notes-section {
     margin-top: 20px;
+}
+
+.theme-mode {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    z-index: 10;
+}
+
+.theme-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 24px;
+    transition: color 0.2s, transform 0.2s;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    color: var(--accent-orange);
+    transform: rotate(15deg);
+}
+
+.theme-toggle__half-sun {
+    background-color: transparent;
+    fill: currentColor;
 }
