@@ -146,3 +146,48 @@ test('Delete entry and update time sum', async ({ page }) => {
 
   await expect(totalTime).toContainText("0");
 });
+
+test('Reset all entries for the currently selected project', async ({ page }) => {
+  const entries = [
+    { projectid: "1", projectName: 'Web Design', durationMinutes: 30, date: '2026-01-20' },
+    { projectid: "1", projectName: 'Web Design', durationMinutes: 45, date: '2026-01-21' },
+    { projectid: "2", projectName: 'App Development', durationMinutes: 100, date: '2026-01-22' }
+  ];
+
+  await page.addInitScript((data) => {
+    window.localStorage.setItem('timeEntries', JSON.stringify(data));
+  }, entries);
+
+  await page.goto('index.html');
+
+  const trigger = page.getByTestId('project-trigger');
+  await trigger.click();
+
+  const list = page.getByTestId('projects-list');
+  await expect(list).not.toBeEmpty();
+  await list.getByText('Web Design').click();
+
+  const entryList = page.getByTestId('history-list');
+  await expect(entryList.locator('li.entry-item')).toHaveCount(2);
+  await expect(page.getByTestId('totalTime')).toContainText("75");
+
+  page.on('dialog', async dialog => {
+    if (dialog.type() === 'confirm') {
+      expect(dialog.message()).toContain('Are you sure you want to delete all entries for the project \"Web Design\"?');
+      await dialog.accept();
+    } else if (dialog.type() === 'alert') {
+      await dialog.accept();
+    }
+  });
+
+  const resetAllBtn = page.getByTestId('reset-all-btn');
+  await resetAllBtn.click();
+
+  await expect(entryList).toContainText('No entries found for this project.');
+  await expect(page.getByTestId('totalTime')).toContainText("0");
+
+  const finalStorage = await page.evaluate(() => JSON.parse(window.localStorage.getItem('timeEntries') || '[]'));
+
+  expect(finalStorage).toHaveLength(1);
+  expect(finalStorage[0].projectName).toBe('App Development');
+});
