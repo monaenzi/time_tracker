@@ -5,6 +5,14 @@ let selectedProjectId = null;
 let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];
 let elapsedTime = 0;
 let selectedProjectName = '';
+// View toggle state
+let currentView = 'week'; // 'week' or 'month'
+let currentGroupingBy = 'day'; // 'day' or 'project' for grouping entries
+let selectedWeekStart = null; // For week view, stores the start date of the selected week
+let selectedMonth = null; // For month view, stores the selected month
+
+
+
 
 
 // ==================== PROJEKT FUNKTIONEN ====================
@@ -344,3 +352,86 @@ document.getElementById('entryForm').onsubmit = function (e) {
 
 fetchProjects();
 renderHistory();
+
+// Event listeners for view toggle buttons
+const weekViewBtn = document.getElementById('weekViewBtn');
+const monthViewBtn = document.getElementById('monthViewBtn');
+const groupByDayBtn = document.getElementById('groupByDayBtn');
+const groupByProjectBtn = document.getElementById('groupByProjectBtn');
+
+if (weekViewBtn) {
+    weekViewBtn.onclick = function() {
+        currentView = 'week';
+        weekViewBtn.classList.add('active');
+        monthViewBtn.classList.remove('active');
+        renderHistory();
+    };
+}
+
+if (monthViewBtn) {
+    monthViewBtn.onclick = function() {
+        currentView = 'month';
+        monthViewBtn.classList.add('active');
+        weekViewBtn.classList.remove('active');
+        renderHistory();
+    };
+}
+
+if (groupByDayBtn) {
+    groupByDayBtn.onclick = function() {
+        currentGroupingBy = 'day';
+        groupByDayBtn.classList.add('active');
+        groupByProjectBtn.classList.remove('active');
+        renderHistory();
+    };
+}
+
+if (groupByProjectBtn) {
+    groupByProjectBtn.onclick = function() {
+        currentGroupingBy = 'project';
+        groupByProjectBtn.classList.add('active');
+        groupByDayBtn.classList.remove('active');
+        renderHistory();
+    };
+}
+
+// Start > Date utility functions - helpers for date calculations
+function getWeekStart(date) {
+    // Get Monday of the week (ISO week starts on Monday)
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
+    return new Date(d.setDate(diff));
+}
+
+function getWeekEnd(date) {
+    const start = getWeekStart(date);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return end;
+}
+
+function isDateInWeek(dateStr, weekStart) {
+    const date = new Date(dateStr);
+    const weekStartDate = new Date(weekStart);
+    const weekEnd = getWeekEnd(weekStartDate);
+    return date >= weekStartDate && date <= weekEnd;
+}
+
+function isDateInMonth(dateStr, year, month) {
+    const date = new Date(dateStr);
+    return date.getFullYear() === year && date.getMonth() === month;
+}
+
+function formatWeekRange(weekStart) {
+    const weekEnd = getWeekEnd(weekStart);
+    const options = { month: 'short', day: 'numeric' };
+    return `${weekStart.toLocaleDateString('de-DE', options)} - ${weekEnd.toLocaleDateString('de-DE', options)}`;
+}
+
+function formatMonthRange(year, month) {
+  const date = new Date(year, month, 1);
+  return date.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+}
+
+// End > Date utility functions for week and month views

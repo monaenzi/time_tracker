@@ -681,7 +681,7 @@ body {
     transition: all 0.2s;
 }
 
-.view-btn:active, .group-btn:active {
+.view-btn.active, .group-btn.active {
     background: var(--accent-blue);
     color: white;
 }
