@@ -5,7 +5,7 @@ let selectedProjectId = null;
 let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];
 let elapsedTime = 0;
 let selectedProjectName = '';
-
+let currentEditIndex = null;
 
 // ==================== PROJEKT FUNKTIONEN ====================
 
@@ -192,21 +192,55 @@ function deleteEntry(index) {
     }
 }
 
-function openDetailModal(entry) {
-    document.getElementById('detailProjectName').textContent = entry.projectName || "Project Details";
-    document.getElementById('detailDate').textContent = entry.date;
-    document.getElementById('detailStartTime').textContent = entry.startTime || "--:--";
-    document.getElementById('detailEndTime').textContent = entry.endTime || "--:--";
-    document.getElementById('detailDuration').textContent = entry.durationMinutes;
+// function openDetailModal(entry) {
+//     document.getElementById('detailProjectName').textContent = entry.projectName || "Project Details";
+//     document.getElementById('detailDate').textContent = entry.date;
+//     document.getElementById('detailStartTime').textContent = entry.startTime || "--:--";
+//     document.getElementById('detailEndTime').textContent = entry.endTime || "--:--";
+//     document.getElementById('detailDuration').textContent = entry.durationMinutes;
+    
+//     const notesDisplay = document.getElementById('detailNotes');
+//     notesDisplay.textContent = entry.notes || "No notes for this entry.";
+    
+//     document.getElementById('detailModal').style.display = 'flex';
 
-    const notesDisplay = document.getElementById('detailNotes');
-    notesDisplay.textContent = entry.notes || "No notes for this entry.";
+//     const body = document.querySelector('#detailModal .detail-body');
+//     if (body) body.scrollTop = 0;
+// }
 
+function openDetailModal(entry, index) {
+    currentEditIndex = index;
+    document.getElementById('detailProjectName').textContent = entry.projectName;
+    document.getElementById('editDate').value = entry.date;
+    document.getElementById('editStartTime').value = entry.startTime;
+    document.getElementById('editEndTime').value = entry.endTime;
+    document.getElementById('editNotes').value = entry.notes || "";
     document.getElementById('detailModal').style.display = 'flex';
-
-    const body = document.querySelector('#detailModal .detail-body');
-    if (body) body.scrollTop = 0;
 }
+
+function saveEntryEdits() {
+    const newStart = document.getElementById('editStartTime').value;
+    const newEnd = document.getElementById('editEndTime').value;
+
+    if (newStart >= newEnd) {
+        document.getElementById('editError').textContent = "Error: End time must be after start time!";
+        document.getElementById('editError').style.display = 'block';
+        return;
+    }
+
+    const entry = timeEntries[currentEditIndex];
+    entry.date = document.getElementById('editDate').value;
+    entry.startTime = newStart;
+    entry.endTime = newEnd;
+    entry.notes = document.getElementById('editNotes').value;
+    entry.durationMinutes = calculateMinutes(newStart, newEnd); 
+
+    localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+    renderHistory(); 
+    closeDetailModal();
+}
+
+document.getElementById('saveEditBtn').onclick = saveEntryEdits;
 
 function closeDetailModal() {
     document.getElementById('detailModal').style.display = 'none';
@@ -215,6 +249,7 @@ function closeDetailModal() {
 document.getElementById('closeDetailBtn').onclick = closeDetailModal;
 document.getElementById('closeDetailBottomBtn').onclick = closeDetailModal;
 document.getElementById('detailOverlay').onclick = closeDetailModal;
+
 
 function renderHistory(filterToday = false) {
     const list = document.getElementById('entryList');
@@ -258,8 +293,12 @@ function renderHistory(filterToday = false) {
                 </div>
             `;
 
-            li.querySelector('.entry-main-content').onclick = () => openDetailModal(e);
+            // li.querySelector('.entry-main-content').onclick = () => openDetailModal(e);
 
+            li.querySelector('.entry-main-content').onclick = () => {
+                const originalIndex = timeEntries.indexOf(e);
+                openDetailModal(e, originalIndex);
+            };
             li.querySelector('.delete-btn').onclick = () => {
                 event.stopPropagation();
                 const originalIndex = timeEntries.indexOf(e);
@@ -403,6 +442,26 @@ document.getElementById('entryForm').onsubmit = function (e) {
     this.reset();
     closeModal();
 };
+
+function deleteEntryFromModal() {
+    if (currentEditIndex !== null) {
+        if (confirm("Are you sure you want to delete this entry?")) {
+            timeEntries.splice(currentEditIndex, 1);
+            
+            localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+            
+            renderHistory();
+            closeDetailModal();
+            
+            currentEditIndex = null;
+        }
+    }
+}
+
+const deleteBtnModal = document.getElementById('deleteEntryBtn');
+if (deleteBtnModal) {
+    deleteBtnModal.onclick = deleteEntryFromModal;
+}
 
 fetchProjects();
 renderHistory();
