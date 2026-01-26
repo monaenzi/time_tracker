@@ -531,3 +531,66 @@ function formatDate(dateStr) {
         day: 'numeric' 
     });
 }
+
+// Render grouped view
+function renderGroupedView(grouped, container) {
+    container.innerHTML = '';
+    
+    if (Object.keys(grouped).length === 0) {
+        container.innerHTML = '<li>No entries found for this period.</li>';
+        return;
+    }
+
+    // Sort keys appropriately
+    const keys = Object.keys(grouped);
+    if (currentGroupingBy === 'day') {
+        keys.sort((a, b) => new Date(b) - new Date(a)); // Most recent first
+    } else {
+        keys.sort(); // Alphabetical by project ID
+    }
+
+    keys.forEach(key => {
+        const group = currentGroupingBy === 'day' ? grouped[key] : grouped[key].entries;
+        const groupTotal = calculateGroupTotal(group);
+        const groupLabel = currentGroupingBy === 'day' 
+            ? formatDate(key) 
+            : grouped[key].name;
+
+        // Create group header
+        const groupHeader = document.createElement('li');
+        groupHeader.className = 'group-header';
+        groupHeader.innerHTML = `
+            <div class="group-header-content">
+                <strong>${groupLabel}</strong>
+                <span class="group-total">${groupTotal} min</span>
+            </div>
+        `;
+        container.appendChild(groupHeader);
+
+        // Create entries for this group
+        group.forEach(entry => {
+            const li = document.createElement('li');
+            li.className = 'entry-item';
+            li.innerHTML = `
+                <div class="entry-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div class="entry-main-content" style="flex-grow: 1; cursor: pointer;">
+                        ${currentGroupingBy === 'day' ? '' : `<span class="entry-date">${entry.date}</span>`}
+                        <span class="entry-info">
+                            ${currentGroupingBy === 'day' ? `<strong>${entry.projectName}</strong>: ` : ''}
+                            ${entry.startTime} - ${entry.endTime} (${entry.durationMinutes} min)
+                        </span>
+                    </div>
+                    <button class="delete-btn" data-testid="delete-btn" style="margin-left: 10px;">✕</button>
+                </div>
+            `;
+
+            li.querySelector('.entry-main-content').onclick = () => openDetailModal(entry);
+            li.querySelector('.delete-btn').onclick = (event) => {
+                event.stopPropagation();
+                const originalIndex = timeEntries.indexOf(entry);
+                deleteEntry(originalIndex);
+            };
+            container.appendChild(li);
+        });
+    });
+}
