@@ -651,3 +651,44 @@ body {
 .detail-notes-section {
     margin-top: 20px;
 }
+
+/* Start > HISTORY SECTION STYLES  */  
+.view-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 16px;
+}
+
+.view-toggle, .group-toggle {
+    display: flex;
+    gap: 8px;
+    background: var(--bg-color);
+    border: 1px solid var(--divider-color);
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.view-btn, .group-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding:8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.view-btn:active, .group-btn:active {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.view-btn:hover:not(.active), .group-btn:hover:not(.active) {
+    color: var(--text-main);
+    background: var(--hover-bg);
+    
+}
+/*  END > HISTORY SECTION STYLES  */  

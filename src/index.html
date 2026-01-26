@@ -58,6 +58,22 @@
 
     <div id="historySection" class="history-panel" style="display:block;" data-testid="history-list">
         <h3 id="historyTitle">All Entries</h3>
+
+        <!-- UI structure - view toggle and grouping controls, Add controls in the history section -->
+         <div class="view-controls">
+            <div class="view-toggle">
+                <button id="weekViewBtn" class="view-btn active">Week</button>
+                <button id="monthViewBtn" class="view-btn">Month</button>
+            </div>
+            <div class="group-controls">
+                <button id="groupByDayBtn" class="group-btn active">Group by Day</button>
+                <button id="groupByProjectBtn" class="group-btn">Group by Project</button>
+            </div>
+         </div>
+
+
+
+
         <div class="filter-controls">
             <button onclick="renderHistory(false)" class="filter-btn">All</button>
             <button onclick="renderHistory(true)" class="filter-btn">Today</button>
