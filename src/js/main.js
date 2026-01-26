@@ -378,7 +378,8 @@ document.getElementById('entryForm').onsubmit = function (e) {
         return;
     }
 
-    const duration = calculateMinutes(startTimeVal, endTimeVal);
+    const durationMin = calculateMinutes(startTimeVal, endTimeVal);
+    const durationSec = durationMin * 60;
 
     const entry = {
         projectid: select.value,
@@ -386,7 +387,8 @@ document.getElementById('entryForm').onsubmit = function (e) {
         date: date,
         startTime: startTimeVal,
         endTime: endTimeVal,
-        durationMinutes: duration,
+        durationMinutes: durationMin,
+        durationSeconds: durationSec,
         notes: notes
     };
 
