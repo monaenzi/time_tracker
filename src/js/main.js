@@ -169,6 +169,20 @@ if (resetAllBtn) {
 }
 
 
+function isOverlapping(date, startTime, endTime){
+    for (let i = 0; i < timeEntries.length; i++) {
+        const existing = timeEntries[i];
+
+        if (existing.date === date) {
+            if (startTime < existing.endTime && endTime > existing.startTime) {
+                return true; 
+            }
+        }
+    }
+    return false; 
+}
+
+
 
 function deleteEntry(index) {
     if (confirm("Are you sure you want to delete this entry?")) {
@@ -331,7 +345,46 @@ document.getElementById('entryForm').onsubmit = function (e) {
         return;
     }
 
+
+    if (isOverlapping(date, startTimeVal, endTimeVal)) {
+        const msg = "Error: This time slot overlaps with an existing entry!";
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
+
     const duration = calculateMinutes(startTimeVal, endTimeVal);
+
+
+
+    let currentTotal = 0;
+    for (let i = 0; i < timeEntries.length; i++) {
+        if (timeEntries[i].projectid == select.value) {
+            currentTotal += timeEntries[i].durationMinutes;
+        }
+    }
+
+    
+    if (currentTotal + duration > 600) {
+        const remaining = 600 - currentTotal;
+        const msg = `Limit reached! You can only add ${remaining > 0 ? remaining : 0} more minutes (Max 600 total).`;
+        
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
 
     const entry = {
         projectid: select.value,
