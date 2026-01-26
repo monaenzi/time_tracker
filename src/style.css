@@ -638,12 +638,7 @@ input::-webkit-calendar-picker-indicator {
 .detail-body::-webkit-scrollbar-thumb:hover {
     background: var(--text-dim);
 }
-#detailDate {
-    font-size: 14px;
-    background-color: #22c55e;
-    color: red;
-    margin-bottom: 12px;
-}
+
 
 .notes-display {
     word-wrap: break-word;
