@@ -16,7 +16,7 @@
                 <span class="dot" id="tagDot"></span>
                 <span id="activeProjectName">DEEP WORK</span>
             </div>
-            <div class="time-number" id="timerDisplay">00:00</div>
+            <div class="time-number" id="timerDisplay" data-testid="timer">00:00</div>
             <div class="status-label">
                 <span class="dot-small orange"></span>
                 <span id="statusText">Paused</span>
@@ -43,20 +43,95 @@
             <div class="v-divider"></div>
 
             <div class="controls">
-                <button id="startStopBtn" class="icon-btn" title="Start/Stop">▶</button>
-                <button id="resetBtn" class="icon-btn" title="Reset">↺</button>
+                <button type="button" id="startStopBtn" class="icon-btn" title="Start/Stop"
+                    data-testid="start-stop-btn">▶</button>
+                <button type="button" id="resetBtn" class="icon-btn" title="Add current Entry"
+                    data-testid="end-session-btn">⤵</button>
                 <div class="v-divider"></div>
-                <button id="historyBtn" class="icon-btn" title="History">🕒<span class="badge"
-                        id="historyCount">3</span></button>
+                <button type="button" id="historyBtn" class="icon-btn" title="History" data-testid="history-btn">⏲︎<span
+                        class="badge" id="historyCount"></span></button>
                 <div class="v-divider"></div>
+                <button type="button" id="addEntryBtn" class="icon-btn" title="Add Entry">＋</button>
             </div>
         </div>
     </div>
 
-    <div id="historySection" class="history-panel" style="display:none;">
-        <h3>Heute</h3>
+    <div id="historySection" class="history-panel" style="display:block;" data-testid="history-list">
+        <h3 id="historyTitle">All Entries</h3>
+        <div class="filter-controls">
+            <button onclick="renderHistory(false)" class="filter-btn">All</button>
+            <button onclick="renderHistory(true)" class="filter-btn">Today</button>
+            <button id="resetAllEntriesBtn" class="filter-btn delete-all-btn" style="color: #ff4444;">Reset All</button>
+        </div>
         <ul id="entryList"></ul>
-        <div class="total">Total: <span id="totalTime">0</span> min</div>
+        <div class="total">Total for Project: <span id="totalTime" data-testid="totalTime">0</span> min</div>
+    </div>
+
+    <div id="entryFormModal" class="form-modal" style="display:none;">
+        <div class="form-overlay"></div>
+        <div class="form-container">
+            <div class="form-header">
+                <h3>Create New Time Entry</h3>
+                <button id="closeFormBtn" class="close-btn">✕</button>
+            </div>
+
+            <form id="entryForm">
+                <div class="form-inputs-wrapper">
+                    <div class="form-group">
+                        <label for="formProjectId">Web Design</label>
+                        <select id="formProjectId" name="projectId" required>
+                            <option value="">Select Project...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="formDate">Date</label>
+                        <input type="date" id="formDate" name="date" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="formStartTime">Start Time</label>
+                        <input type="time" id="formStartTime" name="startTime" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="formEndTime">End Time</label>
+                        <input type="time" id="formEndTime" name="endTime" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="formNotes">Notes</label>
+                        <textarea id="formNotes" name="notes" placeholder="Optional notes..."></textarea>
+                    </div>
+                    <div id="formError" class="error-message" style="display:none;"></div>
+                    <div id="formSuccess" class="success-message" style="display:none;"></div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancelFormBtn" class="btn-secondary">Cancel</button>
+                        <button type="submit" id="submitFormBtn" class="btn-base btn-primary">Create Entry</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="detailModal" class="form-modal" style="display:none;">
+        <div class="form-overlay" id="detailOverlay"></div>
+        <div class="form-container">
+            <div class="form-header">
+                <h3 id="detailProjectName">Project Details</h3>
+                <button id="closeDetailBtn" class="close-btn">✕</button>
+            </div>
+            <div class="detail-body">
+                <p><strong>Date:</strong> <span id="detailDate"></span></p>
+                <p><strong>Time:</strong> <span id="detailStartTime"></span> - <span id="detailEndTime"></span></p>
+                <p><strong>Duration:</strong> <span id="detailDuration"></span> minutes</p>
+                <div class="detail-notes-section">
+                    <strong>Notes:</strong>
+                    <div id="detailNotes" class="notes-display"></div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" id="closeDetailBottomBtn" class="btn-base btn-primary">Close</button>
+            </div>
+        </div>
     </div>
 </body>
 
