@@ -94,11 +94,11 @@ function updateUI() {
 function calculateMinutes(start, end) {
     const [startH, startM] = start.split(':').map(Number);
     const [endH, endM] = end.split(':').map(Number);
-    
+
     let diff = (endH * 60 + endM) - (startH * 60 + startM);
-    
-    if (diff < 0) diff += 24 * 60; 
-    
+
+    if (diff < 0) diff += 24 * 60;
+
     return diff;
 }
 
@@ -142,14 +142,14 @@ function resetAllEntries() {
     }
 
     const confirmation = confirm(`Are you sure you want to delete all entries for the project "${selectedProjectName}"?`);
-    
+
     if (confirmation) {
         timeEntries = timeEntries.filter(e => e.projectid != selectedProjectId);
-        
+
         localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
 
         renderHistory();
-        
+
         alert(`All entries for "${selectedProjectName}" have been deleted.`);
     }
 }
@@ -175,10 +175,10 @@ function openDetailModal(entry) {
     document.getElementById('detailStartTime').textContent = entry.startTime || "--:--";
     document.getElementById('detailEndTime').textContent = entry.endTime || "--:--";
     document.getElementById('detailDuration').textContent = entry.durationMinutes;
-    
+
     const notesDisplay = document.getElementById('detailNotes');
     notesDisplay.textContent = entry.notes || "No notes for this entry.";
-    
+
     document.getElementById('detailModal').style.display = 'flex';
 
     const body = document.querySelector('#detailModal .detail-body');
@@ -344,3 +344,14 @@ document.getElementById('entryForm').onsubmit = function (e) {
 
 fetchProjects();
 renderHistory();
+
+// ==================== THEME SWITCHER ====================
+
+function switchTheme() {
+    const themeSwitchbtn = document.getElementById('theme-btn');
+    themeSwitchbtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+    })
+}
+
+switchTheme();
