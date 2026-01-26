@@ -348,6 +348,8 @@ const groupByProjectBtn = document.getElementById('groupByProjectBtn');
 if (weekViewBtn) {
     weekViewBtn.onclick = function() {
         currentView = 'week';
+        selectedWeekStart = new Date(); // Reset to current week
+        selectedMonth = null;
         weekViewBtn.classList.add('active');
         monthViewBtn.classList.remove('active');
         renderHistory();
@@ -357,6 +359,8 @@ if (weekViewBtn) {
 if (monthViewBtn) {
     monthViewBtn.onclick = function() {
         currentView = 'month';
+        selectedMonth = new Date(); // Reset to current month
+        selectedWeekStart = null;
         monthViewBtn.classList.add('active');
         weekViewBtn.classList.remove('active');
         renderHistory();
