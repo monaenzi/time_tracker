@@ -435,3 +435,53 @@ function formatMonthRange(year, month) {
 }
 
 // End > Date utility functions for week and month views
+
+// ==================== FILTERING & GROUPING FUNCTIONS ====================
+
+// Filter entries by time period
+function filterEntriesByPeriod(entries, view, referenceDate) {
+    if (view === 'week') {
+        const weekStart = getWeekStart(referenceDate);
+        return entries.filter(e => isDateInWeek(e.date, weekStart));
+    } else if (view === 'month') {
+        const year = referenceDate.getFullYear();
+        const month = referenceDate.getMonth();
+        return entries.filter(e => isDateInMonth(e.date, year, month));
+    }
+    return entries;
+}
+
+// Group entries by day
+function groupEntriesByDay(entries) {
+    const grouped = {};
+    entries.forEach(entry => {
+        const date = entry.date;
+        if (!grouped[date]) {
+            grouped[date] = [];
+        }
+        grouped[date].push(entry);
+    });
+    return grouped;
+}
+
+// Group entries by project
+function groupEntriesByProject(entries) {
+    const grouped = {};
+    entries.forEach(entry => {
+        const projectId = entry.projectid || 'unknown';
+        const projectName = entry.projectName || `Project ${projectId}`;
+        if (!grouped[projectId]) {
+            grouped[projectId] = {
+                name: projectName,
+                entries: []
+            };
+        }
+        grouped[projectId].entries.push(entry);
+    });
+    return grouped;
+}
+
+// Calculate total for a group of entries
+function calculateGroupTotal(entries) {
+    return entries.reduce((sum, entry) => sum + (entry.durationMinutes || 0), 0);
+}
