@@ -5,6 +5,8 @@ Projects are loaded from a static JSON file, while time entries are stored local
 
 ## Features
 
+### Sprint 1
+
 - Select a project and start/stop time tracking
 
 - Only one active timer at a time
@@ -20,6 +22,18 @@ Projects are loaded from a static JSON file, while time entries are stored local
   - Time per project (today)
 
   - Total time worked today
+
+### Sprint 2
+
+- Open detailed view of time entry
+
+- Reset all entries in a project
+
+- View all entries from today/this week/this month
+
+- Edit time entries
+
+- Dark and lightmode
 
 ## Tech Stack
 
@@ -133,3 +147,14 @@ npm run dev
 - No team features
 
 - No server-side storage for time entries
+
+
+## Tests
+
+### 1. Test to see if project are being loaded correctly from the server and then displayed
+
+### 2. Test to see if Timer can be started and stopped
+
+### 3. Test to see if time entries are being stored in local storage and persistent after reload
+
+### 4. Test to see if time entry gets deleted and total time gets updated
