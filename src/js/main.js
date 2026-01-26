@@ -169,6 +169,20 @@ if (resetAllBtn) {
 }
 
 
+function isOverlapping(date, startTime, endTime){
+    for (let i = 0; i < timeEntries.length; i++) {
+        const existing = timeEntries[i];
+
+        if (existing.date === date) {
+            if (startTime < existing.endTime && endTime > existing.startTime) {
+                return true; 
+            }
+        }
+    }
+    return false; 
+}
+
+
 
 function deleteEntry(index) {
     if (confirm("Are you sure you want to delete this entry?")) {
@@ -330,6 +344,20 @@ document.getElementById('entryForm').onsubmit = function (e) {
         }
         return;
     }
+
+
+    if (isOverlapping(date, startTimeVal, endTimeVal)) {
+        const msg = "Error: This time slot overlaps with an existing entry!";
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
 
     const duration = calculateMinutes(startTimeVal, endTimeVal);
 
