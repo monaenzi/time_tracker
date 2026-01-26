@@ -62,7 +62,7 @@ function stopTimer() {
     const formatTime = (date) =>
         date.getHours().toString().padStart(2, '0') + ":" +
         date.getMinutes().toString().padStart(2, '0');
-    const duration = Math.round(elapsedTime / 60);
+    // const duration = Math.round(elapsedTime / 60);
 
     const entry = {
         projectid: selectedProjectId,
@@ -70,7 +70,8 @@ function stopTimer() {
         date: new Date().toISOString().split('T')[0],
         startTime: formatTime(startedAt),
         endTime: formatTime(now),
-        durationMinutes: duration,
+        // durationMinutes: duration,
+        durationSeconds: elapsedTime,
         notes: ''
     };
 
@@ -82,6 +83,19 @@ function stopTimer() {
     document.getElementById('startStopBtn').textContent = '▶';
     document.getElementById('statusText').textContent = 'Paused';
     renderHistory();
+}
+
+function formatDuration(entry) {
+   
+    if (entry.durationSeconds !== undefined) {
+        const totalSeconds = entry.durationSeconds;
+        if (totalSeconds < 60) return `${totalSeconds}s`;
+        const m = Math.floor(totalSeconds / 60);
+        const s = totalSeconds % 60;
+        return s > 0 ? `${m}m ${s}s` : `${m}m`;
+    } 
+    
+    return `${entry.durationMinutes}m`;
 }
 
 function updateUI() {
@@ -231,10 +245,11 @@ document.getElementById('detailOverlay').onclick = closeDetailModal;
 function renderHistory(filterToday = false) {
     const list = document.getElementById('entryList');
     const totalElement = document.getElementById('totalTime');
+    let totalSeconds = 0;
 
     if (!selectedProjectId) {
         list.innerHTML = '<li>Please select a project to view entries.</li>';
-        totalElement.textContent = '0';
+        totalElement.textContent = '0s';
         return;
     }
 
@@ -248,13 +263,16 @@ function renderHistory(filterToday = false) {
     filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     list.innerHTML = '';
-    let total = 0;
 
     if (filteredData.length === 0) {
         list.innerHTML = '<li>No entries found for this project.</li>';
     } else {
         filteredData.forEach((e) => {
-            total += e.durationMinutes;
+
+            const seconds = e.durationSeconds !== undefined ? e.durationSeconds : (e.durationMinutes * 60);
+            totalSeconds += seconds;
+
+            const durationText = formatDuration(e); 
 
             const li = document.createElement('li');
             li.className = 'entry-item';
@@ -263,20 +281,19 @@ function renderHistory(filterToday = false) {
                     <div class="entry-main-content" style="flex-grow: 1; cursor: pointer;">
                         <span class="entry-date">${e.date}</span>
                         <span class="entry-info">
-                            <strong>${e.projectName || `Project ${e.projectid}`}</strong>: ${e.durationMinutes} min
+                            <strong>${e.projectName || 'Project'}</strong>: ${durationText}
                         </span>
                     </div>
-                    <button class="delete-btn" data-testid="delete-btn" style="margin-left: 10px;">✕</button>
+                    <button class="delete-btn" data-testid="delete-btn">✕</button>
                 </div>
             `;
-
-            // li.querySelector('.entry-main-content').onclick = () => openDetailModal(e);
 
             li.querySelector('.entry-main-content').onclick = () => {
                 const originalIndex = timeEntries.indexOf(e);
                 openDetailModal(e, originalIndex);
             };
-            li.querySelector('.delete-btn').onclick = () => {
+
+            li.querySelector('.delete-btn').onclick = (event) => {
                 event.stopPropagation();
                 const originalIndex = timeEntries.indexOf(e);
                 deleteEntry(originalIndex);
@@ -285,8 +302,8 @@ function renderHistory(filterToday = false) {
         });
     }
 
-    totalElement.textContent = total;
-
+    totalElement.textContent = formatDuration({ durationSeconds: totalSeconds });
+    
     const badge = document.getElementById('historyCount');
     if (badge) badge.textContent = filteredData.length;
 }
