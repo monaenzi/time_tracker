@@ -211,51 +211,37 @@ function renderHistory(filterToday = false) {
         return;
     }
 
+    // Get entries for selected project
     let filteredData = timeEntries.filter(e => e.projectid == selectedProjectId);
 
-    if (filterToday) {
+    // Apply period filter (week/month) if not using "Today" filter
+    if (!filterToday) {
+        const referenceDate = selectedWeekStart || selectedMonth || new Date();
+        filteredData = filterEntriesByPeriod(filteredData, currentView, referenceDate);
+    } else {
         const today = new Date().toISOString().split('T')[0];
         filteredData = filteredData.filter(e => e.date === today);
     }
 
-    filteredData.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Update period label
+    updatePeriodLabel();
 
-    list.innerHTML = '';
-    let total = 0;
-
-    if (filteredData.length === 0) {
-        list.innerHTML = '<li>No entries found for this project.</li>';
+    // Group entries
+    let grouped;
+    if (currentGroupingBy === 'day') {
+        grouped = groupEntriesByDay(filteredData);
     } else {
-        filteredData.forEach((e) => {
-            total += e.durationMinutes;
-
-            const li = document.createElement('li');
-            li.className = 'entry-item';
-            li.innerHTML = `
-                <div class="entry-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <div class="entry-main-content" style="flex-grow: 1; cursor: pointer;">
-                        <span class="entry-date">${e.date}</span>
-                        <span class="entry-info">
-                            <strong>${e.projectName || `Project ${e.projectid}`}</strong>: ${e.durationMinutes} min
-                        </span>
-                    </div>
-                    <button class="delete-btn" data-testid="delete-btn" style="margin-left: 10px;">✕</button>
-                </div>
-            `;
-
-            li.querySelector('.entry-main-content').onclick = () => openDetailModal(e);
-
-            li.querySelector('.delete-btn').onclick = () => {
-                event.stopPropagation();
-                const originalIndex = timeEntries.indexOf(e);
-                deleteEntry(originalIndex);
-            };
-            list.appendChild(li);
-        });
+        grouped = groupEntriesByProject(filteredData);
     }
 
-    totalElement.textContent = total;
+    // Render grouped view
+    renderGroupedView(grouped, list);
 
+    // Calculate and display total
+    const total = calculateGroupTotal(filteredData);
+    totalElement.textContent = total;
+    
+    // Update badge
     const badge = document.getElementById('historyCount');
     if (badge) badge.textContent = filteredData.length;
 }
