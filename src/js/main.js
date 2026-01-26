@@ -485,3 +485,49 @@ function groupEntriesByProject(entries) {
 function calculateGroupTotal(entries) {
     return entries.reduce((sum, entry) => sum + (entry.durationMinutes || 0), 0);
 }
+
+// Update period label
+function updatePeriodLabel() {
+    const label = document.getElementById('periodLabel');
+    if (!label) return;
+
+    const referenceDate = selectedWeekStart || selectedMonth || new Date();
+    
+    if (currentView === 'week') {
+        const weekStart = getWeekStart(referenceDate);
+        label.textContent = formatWeekRange(weekStart);
+    } else {
+        const year = referenceDate.getFullYear();
+        const month = referenceDate.getMonth();
+        label.textContent = formatMonthRange(year, month);
+    }
+}
+
+// Navigate between periods
+function navigatePeriod(direction) {
+    const referenceDate = selectedWeekStart || selectedMonth || new Date();
+    const newDate = new Date(referenceDate);
+    
+    if (currentView === 'week') {
+        newDate.setDate(newDate.getDate() + (direction * 7));
+        selectedWeekStart = newDate;
+        selectedMonth = null;
+    } else {
+        newDate.setMonth(newDate.getMonth() + direction);
+        selectedMonth = newDate;
+        selectedWeekStart = null;
+    }
+    
+    renderHistory();
+}
+
+// Format date for display
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('de-DE', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+}
