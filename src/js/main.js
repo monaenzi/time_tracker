@@ -337,6 +337,12 @@ document.getElementById('entryForm').onsubmit = function (e) {
 };
 
 fetchProjects();
+
+// Initialize view state
+if (selectedWeekStart === null && selectedMonth === null) {
+    selectedWeekStart = new Date();
+}
+updatePeriodLabel();
 renderHistory();
 
 // Event listeners for view toggle buttons
