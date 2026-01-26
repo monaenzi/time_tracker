@@ -333,6 +333,31 @@ document.getElementById('entryForm').onsubmit = function (e) {
 
     const duration = calculateMinutes(startTimeVal, endTimeVal);
 
+
+
+    let currentTotal = 0;
+    for (let i = 0; i < timeEntries.length; i++) {
+        if (timeEntries[i].projectid == select.value) {
+            currentTotal += timeEntries[i].durationMinutes;
+        }
+    }
+
+    
+    if (currentTotal + duration > 600) {
+        const remaining = 600 - currentTotal;
+        const msg = `Limit reached! You can only add ${remaining > 0 ? remaining : 0} more minutes (Max 600 total).`;
+        
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
+
     const entry = {
         projectid: select.value,
         projectName: selectedOption.textContent,
