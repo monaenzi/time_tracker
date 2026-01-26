@@ -10,18 +10,27 @@ let selectedProjectName = '';
 // ==================== PROJEKT FUNKTIONEN ====================
 
 async function fetchProjects() {
-    const res = await fetch('http://localhost:3000/api/projects');
-    const projects = await res.json();
-    const list = document.getElementById('projectsList');
+    try {
+        const res = await fetch('http://localhost:3000/api/projects');
+        if (!res.ok) {
+            throw new Error(`HTTP Error! Status: ${res.status}`)
+        }
 
-    list.innerHTML = ''; // Liste leeren
-    projects.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'project-item';
-        div.innerHTML = `<span>${p.name}</span>`;
-        div.onclick = () => selectProject(p);
-        list.appendChild(div);
-    });
+        const projects = await res.json();
+        const list = document.getElementById('projectsList');
+
+        list.innerHTML = ''; // Liste leeren
+        projects.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'project-item';
+            div.innerHTML = `<span>${p.name}</span>`;
+            div.onclick = () => selectProject(p);
+            list.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Error while loading project data:', error);
+    }
+
 }
 
 function selectProject(p) {
