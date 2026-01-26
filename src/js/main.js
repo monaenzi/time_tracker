@@ -385,6 +385,18 @@ if (groupByProjectBtn) {
     };
 }
 
+// Navigation handlers
+const prevPeriodBtn = document.getElementById('prevPeriodBtn');
+const nextPeriodBtn = document.getElementById('nextPeriodBtn');
+
+if (prevPeriodBtn) {
+    prevPeriodBtn.onclick = () => navigatePeriod(-1);
+}
+
+if (nextPeriodBtn) {
+    nextPeriodBtn.onclick = () => navigatePeriod(1);
+}
+
 // Start > Date utility functions - helpers for date calculations
 function getWeekStart(date) {
     // Get Monday of the week (ISO week starts on Monday)
