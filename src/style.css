@@ -692,3 +692,63 @@ body {
     
 }
 /*  END > HISTORY SECTION STYLES  */  
+
+
+/* Start > Period Navigation STYLES  */
+.period-navigation {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-btn {
+    background: var(--hover-bg);
+    border: 1px solid var(--divider-color);
+    color: var(--text-main);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.period-label {
+    min-width: 150px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.group-header {
+    background: var(--hover-bg);
+    padding: 12px 16px;
+    margin-top: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--divider-color);
+}
+
+.group-header:first-child {
+    margin-top: 0;
+}
+
+.group-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.group-total {
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+/* End > Period Navigation STYLES  */
