@@ -169,8 +169,9 @@ if (resetAllBtn) {
 }
 
 
-function isOverlapping(date, startTime, endTime){
+function isOverlapping(date, startTime, endTime, ignoreIndex = null){
     for (let i = 0; i < timeEntries.length; i++) {
+        if(ignoreIndex !== null && i === ignoreIndex) continue;
         const existing = timeEntries[i];
 
         if (existing.date === date) {
@@ -221,10 +222,18 @@ function openDetailModal(entry, index) {
 function saveEntryEdits() {
     const newStart = document.getElementById('editStartTime').value;
     const newEnd = document.getElementById('editEndTime').value;
+    const newDate = document.getElementById('editDate').value;
+    const errorEl = document.getElementById('editError');
 
     if (newStart >= newEnd) {
         document.getElementById('editError').textContent = "Error: End time must be after start time!";
         document.getElementById('editError').style.display = 'block';
+        return;
+    }
+
+    if(isOverlapping(newDate, newStart, newEnd, currentEditIndex)){
+        errorEl.textContent = "Error: This update overlaps with another entry!";
+        errorEl.style.display = 'block';
         return;
     }
 
