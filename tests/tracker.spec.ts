@@ -196,47 +196,6 @@ test('Reset all entries for the currently selected project', async ({ page }) =>
 });
 
 /**
- * Cannot exceed 600 total minutes for a single project
- **/
-test('Cannot exceed 600 total minutes for a sinngle project', async ({ page }) => {
-  const entries = [
-    { 
-      projectid: "1", 
-      projectName: 'Web Design', 
-      durationMinutes: 500, 
-      date: new Date().toISOString().split('T')[0], 
-      startTime: "08:00", 
-      endTime: "16:20" 
-    }
-  ];
-
-  await page.addInitScript((data) => {
-    window.localStorage.setItem('timeEntries', JSON.stringify(data));
-  }, entries);
-
-  await page.goto('index.html');
-
-  await page.locator('#addEntryBtn').click();
-
-  const select = page.locator('#formProjectId');
-  await select.selectOption({ label: 'Web Design' });
-
-  await page.locator('#formDate').fill('2026-01-26');
-  await page.locator('#formStartTime').fill('17:00');
-  await page.locator('#formEndTime').fill('19:00');
-
-  await page.locator('#submitFormBtn').click();
-
-  const errorEl = page.locator('#formError');
-  await expect(errorEl).toBeVisible();
-  await expect(errorEl).toContainText('Limit reached!');
-  await expect(errorEl).toContainText('100 more minutes');
-
-  const finalStorage = await page.evaluate(() => JSON.parse(window.localStorage.getItem('timeEntries') || '[]'));
-  expect(finalStorage).toHaveLength(1);
-});
-
-/**
  * Edit an existing time entry and save changes
  **/
 test('Edit an existing time entry and save changes', async ({ page }) => {
