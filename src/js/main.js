@@ -247,6 +247,27 @@ function saveEntryEdits() {
         return;
     }
 
+
+    const newDuration = calculateMinutes(newStart, newEnd);
+    let dayTotal = 0;
+    const currentEntry = timeEntries[currentEditIndex];
+
+    for (let i = 0; i < timeEntries.length; i++) {
+        if (i !== currentEditIndex && 
+            timeEntries[i].projectid == currentEntry.projectid && 
+            timeEntries[i].date === newDate) {
+            dayTotal += timeEntries[i].durationMinutes;
+        }
+    }
+
+    if (dayTotal + newDuration > 600) {
+        const remaining = 600 - dayTotal;
+        errorEl.textContent = `Limit reached! You already have ${dayTotal} min on this day. You can only set this entry to max ${remaining} min.`;
+        errorEl.style.display = 'block';
+        return;
+    }
+
+
     const entry = timeEntries[currentEditIndex];
     entry.date = document.getElementById('editDate').value;
     entry.startTime = newStart;
