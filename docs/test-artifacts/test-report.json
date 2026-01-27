@@ -1,0 +1,226 @@
+{
+  "config": {
+    "configFile": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/playwright.config.js",
+    "rootDir": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "create-entry.spec.js",
+      "file": "create-entry.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Create New Time Entry",
+          "file": "create-entry.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should create a new time entry and display it in the history list",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 6475,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#historyBtn')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#historyBtn')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#historyBtn')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#historyBtn')\u001b[22m\n\n    at /Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js:22:30",
+                        "location": {
+                          "file": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js",
+                          "column": 30,
+                          "line": 22
+                        },
+                        "snippet": "  20 |     // Find the history button and click it\n  21 |     const historyBtn = page.locator('#historyBtn');\n> 22 |     await expect(historyBtn).toBeVisible();\n     |                              ^\n  23 |     await historyBtn.click();\n  24 |     \n  25 |     // Step 2: Verify history panel is visible"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js",
+                            "column": 30,
+                            "line": 22
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('#historyBtn')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('#historyBtn')\u001b[22m\n\n\n  20 |     // Find the history button and click it\n  21 |     const historyBtn = page.locator('#historyBtn');\n> 22 |     await expect(historyBtn).toBeVisible();\n     |                              ^\n  23 |     await historyBtn.click();\n  24 |     \n  25 |     // Step 2: Verify history panel is visible\n    at /Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js:22:30"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-18T20:32:10.167Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/test-results/create-entry-Create-New-Ti-e3e0a-play-it-in-the-history-list-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/test-results/create-entry-Create-New-Ti-e3e0a-play-it-in-the-history-list-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/test-results/create-entry-Create-New-Ti-e3e0a-play-it-in-the-history-list-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js",
+                        "column": 30,
+                        "line": 22
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "218498ec04859670568d-1cc900363b8416ba2a02",
+              "file": "create-entry.spec.js",
+              "line": 18,
+              "column": 3
+            },
+            {
+              "title": "should validate required fields and prevent submission",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "timedOut",
+                      "duration": 32390,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js",
+                            "column": 39,
+                            "line": 88
+                          },
+                          "message": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#historyBtn')\u001b[22m\n\n\n  86 |   test('should validate required fields and prevent submission', async ({ page }) => {\n  87 |     // Open history panel\n> 88 |     await page.locator('#historyBtn').click();\n     |                                       ^\n  89 |     await expect(page.locator('#historySection')).toBeVisible();\n  90 |     \n  91 |     // Open form\n    at /Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js:88:39"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-18T20:32:10.157Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/test-results/create-entry-Create-New-Ti-11248-elds-and-prevent-submission-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/test-results/create-entry-Create-New-Ti-11248-elds-and-prevent-submission-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/test-results/create-entry-Create-New-Ti-11248-elds-and-prevent-submission-chromium/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "218498ec04859670568d-2c214980652ed2fad67c",
+              "file": "create-entry.spec.js",
+              "line": 86,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-01-18T20:32:09.104Z",
+    "duration": 33800.683000000005,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

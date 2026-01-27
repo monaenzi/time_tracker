@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Local Projects</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .pass {
+            background: #2d5016;
+            color: #86efac;
+        }
+        .fail {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4f52e5;
+        }
+        pre {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Local Projects Implementation Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Controls</h2>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="clearStorage()">Clear localStorage</button>
+        <button onclick="showStorage()">Show localStorage</button>
+    </div>
+
+    <div id="testResults"></div>
+
+    <script>
+        // Copy the project management functions from main.js
+        function initializeDefaultProjects() {
+            const stored = localStorage.getItem('userProjects');
+            if (!stored) {
+                const defaultProjects = [
+                    { id: 1, name: "Web Design", client: "Company A" },
+                    { id: 2, name: "App Development", client: "Company B" },
+                    { id: 3, name: "Consulting", client: "Company C" }
+                ];
+                localStorage.setItem('userProjects', JSON.stringify(defaultProjects));
+                return defaultProjects;
+            }
+            return JSON.parse(stored);
+        }
+
+        function getProjects() {
+            return JSON.parse(localStorage.getItem('userProjects')) || initializeDefaultProjects();
+        }
+
+        function saveProjects(projects) {
+            localStorage.setItem('userProjects', JSON.stringify(projects));
+        }
+
+        function getNextProjectId() {
+            const projects = getProjects();
+            if (projects.length === 0) return 1;
+            return Math.max(...projects.map(p => p.id)) + 1;
+        }
+
+        // Test functions
+        function test1_InitializeDefaults() {
+            localStorage.clear();
+            const projects = initializeDefaultProjects();
+            
+            if (projects.length === 3 && 
+                projects[0].name === "Web Design" &&
+                projects[1].name === "App Development" &&
+                projects[2].name === "Consulting") {
+                return { pass: true, message: "Default projects initialized correctly" };
+            }
+            return { pass: false, message: "Default projects not initialized correctly" };
+        }
+
+        function test2_GetProjects() {
+            localStorage.clear();
+            initializeDefaultProjects();
+            const projects = getProjects();
+            
+            if (Array.isArray(projects) && projects.length === 3) {
+                return { pass: true, message: "getProjects() returns correct array" };
+            }
+            return { pass: false, message: "getProjects() failed" };
+        }
+
+        function test3_SaveProjects() {
+            const testProjects = [
+                { id: 1, name: "Test Project 1" },
+                { id: 2, name: "Test Project 2" }
+            ];
+            saveProjects(testProjects);
+            const saved = JSON.parse(localStorage.getItem('userProjects'));
+            
+            if (saved.length === 2 && saved[0].name === "Test Project 1") {
+                return { pass: true, message: "saveProjects() saves correctly" };
+            }
+            return { pass: false, message: "saveProjects() failed" };
+        }
+
+        function test4_Persistence() {
+            const testProjects = [
+                { id: 1, name: "Persistent Project" }
+            ];
+            saveProjects(testProjects);
+            const retrieved = getProjects();
+            
+            if (retrieved.length === 1 && retrieved[0].name === "Persistent Project") {
+                return { pass: true, message: "Projects persist in localStorage" };
+            }
+            return { pass: false, message: "Persistence failed" };
+        }
+
+        function test5_GetNextProjectId() {
+            localStorage.clear();
+            initializeDefaultProjects();
+            const nextId = getNextProjectId();
+            
+            if (nextId === 4) {
+                return { pass: true, message: "getNextProjectId() returns correct next ID (4)" };
+            }
+            return { pass: false, message: `getNextProjectId() returned ${nextId}, expected 4` };
+        }
+
+        function test6_EmptyStorage() {
+            localStorage.clear();
+            const projects = getProjects();
+            
+            if (projects.length === 3) {
+                return { pass: true, message: "Empty storage initializes defaults automatically" };
+            }
+            return { pass: false, message: "Empty storage not handled correctly" };
+        }
+
+        function runAllTests() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<h2>Test Results</h2>';
+            
+            const tests = [
+                { name: "Test 1: Initialize Default Projects", fn: test1_InitializeDefaults },
+                { name: "Test 2: Get Projects", fn: test2_GetProjects },
+                { name: "Test 3: Save Projects", fn: test3_SaveProjects },
+                { name: "Test 4: Persistence", fn: test4_Persistence },
+                { name: "Test 5: Get Next Project ID", fn: test5_GetNextProjectId },
+                { name: "Test 6: Empty Storage Handling", fn: test6_EmptyStorage }
+            ];
+
+            let passed = 0;
+            let failed = 0;
+
+            tests.forEach(test => {
+                const result = test.fn();
+                const div = document.createElement('div');
+                div.className = `test-result ${result.pass ? 'pass' : 'fail'}`;
+                div.innerHTML = `
+                    <strong>${test.name}</strong><br>
+                    ${result.pass ? '✅' : '❌'} ${result.message}
+                `;
+                results.appendChild(div);
+                
+                if (result.pass) passed++;
+                else failed++;
+            });
+
+            const summary = document.createElement('div');
+            summary.className = `test-result ${failed === 0 ? 'pass' : 'fail'}`;
+            summary.innerHTML = `
+                <strong>Summary:</strong> ${passed} passed, ${failed} failed
+            `;
+            results.appendChild(summary);
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            alert('localStorage cleared! Reload page to see defaults initialize.');
+        }
+
+        function showStorage() {
+            const projects = localStorage.getItem('userProjects');
+            if (projects) {
+                alert('localStorage content:\n\n' + JSON.stringify(JSON.parse(projects), null, 2));
+            } else {
+                alert('localStorage is empty');
+            }
+        }
+
+        // Auto-run tests on load
+        window.onload = () => {
+            runAllTests();
+        };
+    </script>
+</body>
+</html>

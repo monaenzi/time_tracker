@@ -1,0 +1,64 @@
+
+> time_tracker@1.0.0 test
+> playwright test
+
+
+Running 2 tests using 2 workers
+
+[1A[2K(node:61435) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:61436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:61435) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:61436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[1/2] [chromium] › tests/create-entry.spec.js:24:3 › Create New Time Entry › should create a new time entry and display it in the history list
+[1A[2K[2/2] [chromium] › tests/create-entry.spec.js:99:3 › Create New Time Entry › should validate required fields and prevent submission
+[1A[2K  1) [chromium] › tests/create-entry.spec.js:99:3 › Create New Time Entry › should validate required fields and prevent submission 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator:  locator('#formError')
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('#formError')[22m
+    [2m    9 × locator resolved to <div id="formError" class="error-message"></div>[22m
+    [2m      - unexpected value "hidden"[22m
+
+
+      111 |     // Verify error message appears
+      112 |     const errorMessage = page.locator('#formError');
+    > 113 |     await expect(errorMessage).toBeVisible();
+          |                                ^
+      114 |     await expect(errorMessage).toContainText('Please select a project');
+      115 |   });
+      116 | });
+        at /Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js:113:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/create-entry-Create-New-Ti-11248-elds-and-prevent-submission-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/create-entry-Create-New-Ti-11248-elds-and-prevent-submission-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/create-entry-Create-New-Ti-11248-elds-and-prevent-submission-chromium/error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › tests/create-entry.spec.js:99:3 › Create New Time Entry › should validate required fields and prevent submission 
+  1 passed (9.4s)

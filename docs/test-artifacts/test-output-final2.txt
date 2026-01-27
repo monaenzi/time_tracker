@@ -1,0 +1,26 @@
+
+> time_tracker@1.0.0 test
+> playwright test
+
+
+Running 2 tests using 2 workers
+
+[1A[2K(node:62160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62161) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62161) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[1/2] [chromium] › tests/create-entry.spec.js:99:3 › Create New Time Entry › should validate required fields and prevent submission
+[1A[2K[2/2] [chromium] › tests/create-entry.spec.js:24:3 › Create New Time Entry › should create a new time entry and display it in the history list
+[1A[2K  2 passed (6.1s)

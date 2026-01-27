@@ -1,0 +1,91 @@
+
+> time_tracker@1.0.0 test
+> playwright test
+
+
+Running 2 tests using 2 workers
+
+[1A[2K(node:20863) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:20864) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:20863) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:20864) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[1/2] [chromium] › tests/create-entry.spec.js:18:3 › Create New Time Entry › should create a new time entry and display it in the history list
+[1A[2K[2/2] [chromium] › tests/create-entry.spec.js:86:3 › Create New Time Entry › should validate required fields and prevent submission
+[1A[2K  1) [chromium] › tests/create-entry.spec.js:18:3 › Create New Time Entry › should create a new time entry and display it in the history list 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('#historyBtn')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('#historyBtn')[22m
+
+
+      20 |     // Find the history button and click it
+      21 |     const historyBtn = page.locator('#historyBtn');
+    > 22 |     await expect(historyBtn).toBeVisible();
+         |                              ^
+      23 |     await historyBtn.click();
+      24 |     
+      25 |     // Step 2: Verify history panel is visible
+        at /Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js:22:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/create-entry-Create-New-Ti-e3e0a-play-it-in-the-history-list-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/create-entry-Create-New-Ti-e3e0a-play-it-in-the-history-list-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/create-entry-Create-New-Ti-e3e0a-play-it-in-the-history-list-chromium/error-context.md
+
+
+[1A[2K  2) [chromium] › tests/create-entry.spec.js:86:3 › Create New Time Entry › should validate required fields and prevent submission 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#historyBtn')[22m
+
+
+      86 |   test('should validate required fields and prevent submission', async ({ page }) => {
+      87 |     // Open history panel
+    > 88 |     await page.locator('#historyBtn').click();
+         |                                       ^
+      89 |     await expect(page.locator('#historySection')).toBeVisible();
+      90 |     
+      91 |     // Open form
+        at /Users/neocarelse/FHJ-MSD/Web Application Development/Agile Project/time_tracker-1/tests/create-entry.spec.js:88:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/create-entry-Create-New-Ti-11248-elds-and-prevent-submission-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/create-entry-Create-New-Ti-11248-elds-and-prevent-submission-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/create-entry-Create-New-Ti-11248-elds-and-prevent-submission-chromium/error-context.md
+
+
+[1A[2K  2 failed
+    [chromium] › tests/create-entry.spec.js:18:3 › Create New Time Entry › should create a new time entry and display it in the history list 
+    [chromium] › tests/create-entry.spec.js:86:3 › Create New Time Entry › should validate required fields and prevent submission 

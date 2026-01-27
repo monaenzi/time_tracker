@@ -578,11 +578,18 @@ input::-webkit-calendar-picker-indicator {
     padding: 2px 8px;
     margin-left: 5px;
     border-radius: 12px;
+    transition: all 0.2s;
 }
 
 .filter-btn:hover {
     color: var(--hover-btn-color);
     border-color: var(--hover-btn-border-color);
+}
+
+.filter-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
 }
 
 .history-panel li {
