@@ -126,6 +126,16 @@ function openModal() {
 
 function closeModal() {
     document.getElementById('entryFormModal').style.display = 'none';
+
+    const form = document.getElementById('entryForm');
+    if (form) {
+        form.reset();
+    }
+    
+    const errorEl = document.getElementById('formError');
+    if (errorEl) {
+        errorEl.style.display = 'none';
+    }
 }
 
 async function populateProjectSelect() {
@@ -413,7 +423,7 @@ document.getElementById('entryForm').onsubmit = function (e) {
 
     let currentTotal = 0;
     for (let i = 0; i < timeEntries.length; i++) {
-        if (timeEntries[i].projectid == select.value) {
+        if (timeEntries[i].projectid == select.value && timeEntries[i].date === date) {
             currentTotal += timeEntries[i].durationMinutes;
         }
     }
@@ -421,7 +431,7 @@ document.getElementById('entryForm').onsubmit = function (e) {
     
     if (currentTotal + duration > 600) {
         const remaining = 600 - currentTotal;
-        const msg = `Limit reached! You can only add ${remaining > 0 ? remaining : 0} more minutes (Max 600 total).`;
+        const msg = `Limit reached! You have already recorded ${currentTotal} min on ${date}. You can only add ${remaining > 0 ? remaining : 0} more minutes (Max 600 per day).`;
         
         if (errorEl) {
             errorEl.textContent = msg;
