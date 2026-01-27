@@ -5,31 +5,37 @@ let selectedProjectId = null;
 let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];
 let elapsedTime = 0;
 let selectedProjectName = '';
+let currentEditIndex = null;
 // View toggle state
 let currentView = 'week'; // 'week' or 'month'
 let currentGroupingBy = 'day'; // 'day' or 'project' for grouping entries
 let selectedWeekStart = null; // For week view, stores the start date of the selected week
 let selectedMonth = null; // For month view, stores the selected month
 
-
-
-
-
 // ==================== PROJEKT FUNKTIONEN ====================
 
 async function fetchProjects() {
-    const res = await fetch('http://localhost:3000/api/projects');
-    const projects = await res.json();
-    const list = document.getElementById('projectsList');
+    try {
+        const res = await fetch('http://localhost:3000/api/projects');
+        if (!res.ok) {
+            throw new Error(`HTTP Error! Status: ${res.status}`)
+        }
 
-    list.innerHTML = ''; // Liste leeren
-    projects.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'project-item';
-        div.innerHTML = `<span>${p.name}</span>`;
-        div.onclick = () => selectProject(p);
-        list.appendChild(div);
-    });
+        const projects = await res.json();
+        const list = document.getElementById('projectsList');
+
+        list.innerHTML = ''; // Liste leeren
+        projects.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'project-item';
+            div.innerHTML = `<span>${p.name}</span>`;
+            div.onclick = () => selectProject(p);
+            list.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Error while loading project data:', error);
+    }
+
 }
 
 function selectProject(p) {
@@ -102,11 +108,11 @@ function updateUI() {
 function calculateMinutes(start, end) {
     const [startH, startM] = start.split(':').map(Number);
     const [endH, endM] = end.split(':').map(Number);
-    
+
     let diff = (endH * 60 + endM) - (startH * 60 + startM);
-    
-    if (diff < 0) diff += 24 * 60; 
-    
+
+    if (diff < 0) diff += 24 * 60;
+
     return diff;
 }
 
@@ -150,14 +156,14 @@ function resetAllEntries() {
     }
 
     const confirmation = confirm(`Are you sure you want to delete all entries for the project "${selectedProjectName}"?`);
-    
+
     if (confirmation) {
         timeEntries = timeEntries.filter(e => e.projectid != selectedProjectId);
-        
+
         localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
 
         renderHistory();
-        
+
         alert(`All entries for "${selectedProjectName}" have been deleted.`);
     }
 }
@@ -165,6 +171,20 @@ function resetAllEntries() {
 const resetAllBtn = document.getElementById('resetAllEntriesBtn');
 if (resetAllBtn) {
     resetAllBtn.onclick = resetAllEntries;
+}
+
+
+function isOverlapping(date, startTime, endTime){
+    for (let i = 0; i < timeEntries.length; i++) {
+        const existing = timeEntries[i];
+
+        if (existing.date === date) {
+            if (startTime < existing.endTime && endTime > existing.startTime) {
+                return true; 
+            }
+        }
+    }
+    return false; 
 }
 
 
@@ -177,21 +197,55 @@ function deleteEntry(index) {
     }
 }
 
-function openDetailModal(entry) {
-    document.getElementById('detailProjectName').textContent = entry.projectName || "Project Details";
-    document.getElementById('detailDate').textContent = entry.date;
-    document.getElementById('detailStartTime').textContent = entry.startTime || "--:--";
-    document.getElementById('detailEndTime').textContent = entry.endTime || "--:--";
-    document.getElementById('detailDuration').textContent = entry.durationMinutes;
+// function openDetailModal(entry) {
+//     document.getElementById('detailProjectName').textContent = entry.projectName || "Project Details";
+//     document.getElementById('detailDate').textContent = entry.date;
+//     document.getElementById('detailStartTime').textContent = entry.startTime || "--:--";
+//     document.getElementById('detailEndTime').textContent = entry.endTime || "--:--";
+//     document.getElementById('detailDuration').textContent = entry.durationMinutes;
     
-    const notesDisplay = document.getElementById('detailNotes');
-    notesDisplay.textContent = entry.notes || "No notes for this entry.";
+//     const notesDisplay = document.getElementById('detailNotes');
+//     notesDisplay.textContent = entry.notes || "No notes for this entry.";
     
-    document.getElementById('detailModal').style.display = 'flex';
+//     document.getElementById('detailModal').style.display = 'flex';
 
-    const body = document.querySelector('#detailModal .detail-body');
-    if (body) body.scrollTop = 0;
+//     const body = document.querySelector('#detailModal .detail-body');
+//     if (body) body.scrollTop = 0;
+// }
+
+function openDetailModal(entry, index) {
+    currentEditIndex = index;
+    document.getElementById('detailProjectName').textContent = entry.projectName;
+    document.getElementById('editDate').value = entry.date;
+    document.getElementById('editStartTime').value = entry.startTime;
+    document.getElementById('editEndTime').value = entry.endTime;
+    document.getElementById('editNotes').value = entry.notes || "";
+    document.getElementById('detailModal').style.display = 'flex';
 }
+
+function saveEntryEdits() {
+    const newStart = document.getElementById('editStartTime').value;
+    const newEnd = document.getElementById('editEndTime').value;
+
+    if (newStart >= newEnd) {
+        document.getElementById('editError').textContent = "Error: End time must be after start time!";
+        document.getElementById('editError').style.display = 'block';
+        return;
+    }
+
+    const entry = timeEntries[currentEditIndex];
+    entry.date = document.getElementById('editDate').value;
+    entry.startTime = newStart;
+    entry.endTime = newEnd;
+    entry.notes = document.getElementById('editNotes').value;
+    entry.durationMinutes = calculateMinutes(newStart, newEnd); 
+
+    localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+    renderHistory(); 
+    closeDetailModal();
+}
+
+document.getElementById('saveEditBtn').onclick = saveEntryEdits;
 
 function closeDetailModal() {
     document.getElementById('detailModal').style.display = 'none';
@@ -200,6 +254,204 @@ function closeDetailModal() {
 document.getElementById('closeDetailBtn').onclick = closeDetailModal;
 document.getElementById('closeDetailBottomBtn').onclick = closeDetailModal;
 document.getElementById('detailOverlay').onclick = closeDetailModal;
+
+
+// ==================== DATE UTILITY FUNCTIONS ====================
+
+function getWeekStart(date) {
+    // Get Monday of the week (ISO week starts on Monday)
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
+    const result = new Date(d.getFullYear(), d.getMonth(), diff);
+    return result;
+}
+
+function getWeekEnd(date) {
+    const start = getWeekStart(date);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return end;
+}
+
+function isDateInWeek(dateStr, weekStart) {
+    const date = new Date(dateStr);
+    const weekStartDate = new Date(weekStart);
+    const weekEnd = getWeekEnd(weekStartDate);
+    return date >= weekStartDate && date <= weekEnd;
+}
+
+function isDateInMonth(dateStr, year, month) {
+    const date = new Date(dateStr);
+    return date.getFullYear() === year && date.getMonth() === month;
+}
+
+function formatWeekRange(weekStart) {
+    const weekEnd = getWeekEnd(weekStart);
+    const options = { month: 'short', day: 'numeric' };
+    return `${weekStart.toLocaleDateString('de-DE', options)} - ${weekEnd.toLocaleDateString('de-DE', options)}`;
+}
+
+function formatMonthRange(year, month) {
+    const date = new Date(year, month, 1);
+    return date.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+}
+
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('de-DE', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+}
+
+// ==================== FILTERING & GROUPING FUNCTIONS ====================
+
+function filterEntriesByPeriod(entries, view, referenceDate) {
+    if (view === 'week') {
+        const weekStart = getWeekStart(referenceDate);
+        return entries.filter(e => isDateInWeek(e.date, weekStart));
+    } else if (view === 'month') {
+        const year = referenceDate.getFullYear();
+        const month = referenceDate.getMonth();
+        return entries.filter(e => isDateInMonth(e.date, year, month));
+    }
+    return entries;
+}
+
+function groupEntriesByDay(entries) {
+    const grouped = {};
+    entries.forEach(entry => {
+        const date = entry.date;
+        if (!grouped[date]) {
+            grouped[date] = [];
+        }
+        grouped[date].push(entry);
+    });
+    return grouped;
+}
+
+function groupEntriesByProject(entries) {
+    const grouped = {};
+    entries.forEach(entry => {
+        const projectId = entry.projectid || 'unknown';
+        const projectName = entry.projectName || `Project ${projectId}`;
+        if (!grouped[projectId]) {
+            grouped[projectId] = {
+                name: projectName,
+                entries: []
+            };
+        }
+        grouped[projectId].entries.push(entry);
+    });
+    return grouped;
+}
+
+function calculateGroupTotal(entries) {
+    return entries.reduce((sum, entry) => sum + (entry.durationMinutes || 0), 0);
+}
+
+function updatePeriodLabel() {
+    const label = document.getElementById('periodLabel');
+    if (!label) return;
+
+    const referenceDate = selectedWeekStart || selectedMonth || new Date();
+    
+    if (currentView === 'week') {
+        const weekStart = getWeekStart(referenceDate);
+        label.textContent = formatWeekRange(weekStart);
+    } else {
+        const year = referenceDate.getFullYear();
+        const month = referenceDate.getMonth();
+        label.textContent = formatMonthRange(year, month);
+    }
+}
+
+function navigatePeriod(direction) {
+    const referenceDate = selectedWeekStart || selectedMonth || new Date();
+    const newDate = new Date(referenceDate);
+    
+    if (currentView === 'week') {
+        newDate.setDate(newDate.getDate() + (direction * 7));
+        selectedWeekStart = newDate;
+        selectedMonth = null;
+    } else {
+        newDate.setMonth(newDate.getMonth() + direction);
+        selectedMonth = newDate;
+        selectedWeekStart = null;
+    }
+    
+    renderHistory();
+}
+
+function renderGroupedView(grouped, container) {
+    container.innerHTML = '';
+    
+    if (Object.keys(grouped).length === 0) {
+        container.innerHTML = '<li>No entries found for this period.</li>';
+        return;
+    }
+
+    // Sort keys appropriately
+    const keys = Object.keys(grouped);
+    if (currentGroupingBy === 'day') {
+        keys.sort((a, b) => new Date(b) - new Date(a)); // Most recent first
+    } else {
+        keys.sort(); // Alphabetical by project ID
+    }
+
+    keys.forEach(key => {
+        const group = currentGroupingBy === 'day' ? grouped[key] : grouped[key].entries;
+        const groupTotal = calculateGroupTotal(group);
+        const groupLabel = currentGroupingBy === 'day' 
+            ? formatDate(key) 
+            : grouped[key].name;
+
+        // Create group header
+        const groupHeader = document.createElement('li');
+        groupHeader.className = 'group-header';
+        groupHeader.innerHTML = `
+            <div class="group-header-content">
+                <strong>${groupLabel}</strong>
+                <span class="group-total">${groupTotal} min</span>
+            </div>
+        `;
+        container.appendChild(groupHeader);
+
+        // Create entries for this group
+        group.forEach(entry => {
+            const li = document.createElement('li');
+            li.className = 'entry-item';
+            li.innerHTML = `
+                <div class="entry-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div class="entry-main-content" style="flex-grow: 1; cursor: pointer;">
+                        ${currentGroupingBy === 'day' ? '' : `<span class="entry-date">${entry.date}</span>`}
+                        <span class="entry-info">
+                            ${currentGroupingBy === 'day' ? `<strong>${entry.projectName}</strong>: ` : ''}
+                            ${entry.startTime} - ${entry.endTime} (${entry.durationMinutes} min)
+                        </span>
+                    </div>
+                    <button class="delete-btn" data-testid="delete-btn" style="margin-left: 10px;">✕</button>
+                </div>
+            `;
+
+            li.querySelector('.entry-main-content').onclick = () => {
+                const originalIndex = timeEntries.indexOf(entry);
+                openDetailModal(entry, originalIndex);
+            };
+            li.querySelector('.delete-btn').onclick = (event) => {
+                event.stopPropagation();
+                const originalIndex = timeEntries.indexOf(entry);
+                deleteEntry(originalIndex);
+            };
+            container.appendChild(li);
+        });
+    });
+}
+
+// ==================== RENDER HISTORY ====================
 
 function renderHistory(filterToday = false) {
     const list = document.getElementById('entryList');
@@ -316,7 +568,46 @@ document.getElementById('entryForm').onsubmit = function (e) {
         return;
     }
 
+
+    if (isOverlapping(date, startTimeVal, endTimeVal)) {
+        const msg = "Error: This time slot overlaps with an existing entry!";
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
+
     const duration = calculateMinutes(startTimeVal, endTimeVal);
+
+
+
+    let currentTotal = 0;
+    for (let i = 0; i < timeEntries.length; i++) {
+        if (timeEntries[i].projectid == select.value) {
+            currentTotal += timeEntries[i].durationMinutes;
+        }
+    }
+
+    
+    if (currentTotal + duration > 600) {
+        const remaining = 600 - currentTotal;
+        const msg = `Limit reached! You can only add ${remaining > 0 ? remaining : 0} more minutes (Max 600 total).`;
+        
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
 
     const entry = {
         projectid: select.value,
@@ -335,6 +626,26 @@ document.getElementById('entryForm').onsubmit = function (e) {
     this.reset();
     closeModal();
 };
+
+function deleteEntryFromModal() {
+    if (currentEditIndex !== null) {
+        if (confirm("Are you sure you want to delete this entry?")) {
+            timeEntries.splice(currentEditIndex, 1);
+            
+            localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+            
+            renderHistory();
+            closeDetailModal();
+            
+            currentEditIndex = null;
+        }
+    }
+}
+
+const deleteBtnModal = document.getElementById('deleteEntryBtn');
+if (deleteBtnModal) {
+    deleteBtnModal.onclick = deleteEntryFromModal;
+}
 
 fetchProjects();
 
@@ -403,203 +714,13 @@ if (nextPeriodBtn) {
     nextPeriodBtn.onclick = () => navigatePeriod(1);
 }
 
-// Start > Date utility functions - helpers for date calculations
-function getWeekStart(date) {
-    // Get Monday of the week (ISO week starts on Monday)
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
-    const result = new Date(d.getFullYear(), d.getMonth(), diff);
-    return result;
+// ==================== THEME SWITCHER ====================
+
+function switchTheme() {
+    const themeSwitchbtn = document.getElementById('theme-btn');
+    themeSwitchbtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+    })
 }
 
-function getWeekEnd(date) {
-    const start = getWeekStart(date);
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    return end;
-}
-
-function isDateInWeek(dateStr, weekStart) {
-    const date = new Date(dateStr);
-    const weekStartDate = new Date(weekStart);
-    const weekEnd = getWeekEnd(weekStartDate);
-    return date >= weekStartDate && date <= weekEnd;
-}
-
-function isDateInMonth(dateStr, year, month) {
-    const date = new Date(dateStr);
-    return date.getFullYear() === year && date.getMonth() === month;
-}
-
-function formatWeekRange(weekStart) {
-    const weekEnd = getWeekEnd(weekStart);
-    const options = { month: 'short', day: 'numeric' };
-    return `${weekStart.toLocaleDateString('de-DE', options)} - ${weekEnd.toLocaleDateString('de-DE', options)}`;
-}
-
-function formatMonthRange(year, month) {
-  const date = new Date(year, month, 1);
-  return date.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
-}
-
-// End > Date utility functions for week and month views
-
-// ==================== FILTERING & GROUPING FUNCTIONS ====================
-
-// Filter entries by time period
-function filterEntriesByPeriod(entries, view, referenceDate) {
-    if (view === 'week') {
-        const weekStart = getWeekStart(referenceDate);
-        return entries.filter(e => isDateInWeek(e.date, weekStart));
-    } else if (view === 'month') {
-        const year = referenceDate.getFullYear();
-        const month = referenceDate.getMonth();
-        return entries.filter(e => isDateInMonth(e.date, year, month));
-    }
-    return entries;
-}
-
-// Group entries by day
-function groupEntriesByDay(entries) {
-    const grouped = {};
-    entries.forEach(entry => {
-        const date = entry.date;
-        if (!grouped[date]) {
-            grouped[date] = [];
-        }
-        grouped[date].push(entry);
-    });
-    return grouped;
-}
-
-// Group entries by project
-function groupEntriesByProject(entries) {
-    const grouped = {};
-    entries.forEach(entry => {
-        const projectId = entry.projectid || 'unknown';
-        const projectName = entry.projectName || `Project ${projectId}`;
-        if (!grouped[projectId]) {
-            grouped[projectId] = {
-                name: projectName,
-                entries: []
-            };
-        }
-        grouped[projectId].entries.push(entry);
-    });
-    return grouped;
-}
-
-// Calculate total for a group of entries
-function calculateGroupTotal(entries) {
-    return entries.reduce((sum, entry) => sum + (entry.durationMinutes || 0), 0);
-}
-
-// Update period label
-function updatePeriodLabel() {
-    const label = document.getElementById('periodLabel');
-    if (!label) return;
-
-    const referenceDate = selectedWeekStart || selectedMonth || new Date();
-    
-    if (currentView === 'week') {
-        const weekStart = getWeekStart(referenceDate);
-        label.textContent = formatWeekRange(weekStart);
-    } else {
-        const year = referenceDate.getFullYear();
-        const month = referenceDate.getMonth();
-        label.textContent = formatMonthRange(year, month);
-    }
-}
-
-// Navigate between periods
-function navigatePeriod(direction) {
-    const referenceDate = selectedWeekStart || selectedMonth || new Date();
-    const newDate = new Date(referenceDate);
-    
-    if (currentView === 'week') {
-        newDate.setDate(newDate.getDate() + (direction * 7));
-        selectedWeekStart = newDate;
-        selectedMonth = null;
-    } else {
-        newDate.setMonth(newDate.getMonth() + direction);
-        selectedMonth = newDate;
-        selectedWeekStart = null;
-    }
-    
-    renderHistory();
-}
-
-// Format date for display
-function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('de-DE', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-    });
-}
-
-// Render grouped view
-function renderGroupedView(grouped, container) {
-    container.innerHTML = '';
-    
-    if (Object.keys(grouped).length === 0) {
-        container.innerHTML = '<li>No entries found for this period.</li>';
-        return;
-    }
-
-    // Sort keys appropriately
-    const keys = Object.keys(grouped);
-    if (currentGroupingBy === 'day') {
-        keys.sort((a, b) => new Date(b) - new Date(a)); // Most recent first
-    } else {
-        keys.sort(); // Alphabetical by project ID
-    }
-
-    keys.forEach(key => {
-        const group = currentGroupingBy === 'day' ? grouped[key] : grouped[key].entries;
-        const groupTotal = calculateGroupTotal(group);
-        const groupLabel = currentGroupingBy === 'day' 
-            ? formatDate(key) 
-            : grouped[key].name;
-
-        // Create group header
-        const groupHeader = document.createElement('li');
-        groupHeader.className = 'group-header';
-        groupHeader.innerHTML = `
-            <div class="group-header-content">
-                <strong>${groupLabel}</strong>
-                <span class="group-total">${groupTotal} min</span>
-            </div>
-        `;
-        container.appendChild(groupHeader);
-
-        // Create entries for this group
-        group.forEach(entry => {
-            const li = document.createElement('li');
-            li.className = 'entry-item';
-            li.innerHTML = `
-                <div class="entry-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <div class="entry-main-content" style="flex-grow: 1; cursor: pointer;">
-                        ${currentGroupingBy === 'day' ? '' : `<span class="entry-date">${entry.date}</span>`}
-                        <span class="entry-info">
-                            ${currentGroupingBy === 'day' ? `<strong>${entry.projectName}</strong>: ` : ''}
-                            ${entry.startTime} - ${entry.endTime} (${entry.durationMinutes} min)
-                        </span>
-                    </div>
-                    <button class="delete-btn" data-testid="delete-btn" style="margin-left: 10px;">✕</button>
-                </div>
-            `;
-
-            li.querySelector('.entry-main-content').onclick = () => openDetailModal(entry);
-            li.querySelector('.delete-btn').onclick = (event) => {
-                event.stopPropagation();
-                const originalIndex = timeEntries.indexOf(entry);
-                deleteEntry(originalIndex);
-            };
-            container.appendChild(li);
-        });
-    });
-}
+switchTheme();
