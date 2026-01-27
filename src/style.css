@@ -9,6 +9,7 @@
     --hover-bg: #25262b;
     --hover-btn-color: #fff;
     --hover-btn-border-color: #fff;
+    --hover-entry-item: rgba(0, 0, 0, 0.164);
     --create-entry-icons: invert(100%) brightness(100%);
 }
 
@@ -24,6 +25,7 @@
     --hover-bg: #eae8e1;
     --hover-btn-color: #2c2825;
     --hover-btn-border-color: #2c2825;
+    --hover-entry-item: rgba(0, 0, 0, 0.025);
     --create-entry-icons: none;
 }
 
@@ -608,7 +610,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .entry-info {
-    color: #ccc;
+    color: #a1a1a1;
     font-size: 14px;
     margin-left: 20px;
     flex-grow: 1;
@@ -637,7 +639,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .entry-item:hover {
-    background-color: rgba(0, 0, 0, 0.164);
+    background-color: var(--hover-entry-item);
 }
 
 .detail-body {
@@ -824,4 +826,12 @@ input::-webkit-calendar-picker-indicator {
 .theme-toggle__half-sun {
     background-color: transparent;
     fill: currentColor;
+}
+
+#historySection>div.filter-controls {
+    padding: 4px;
+}
+
+.entry-date {
+    padding-left: 4px;
 }

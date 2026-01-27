@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Tracker</title>
     <link rel="stylesheet" href="style.css">
+      <link rel="icon" type="image/x-icon" href="./assets/icons/icons8-clock-48.png">
     <script src="js/main.js" defer></script>
 </head>
 
@@ -91,9 +92,9 @@
 
 
         <div class="filter-controls">
-            <button id="filterAllBtn" class="filter-btn active">All</button>
-            <button id="filterTodayBtn" class="filter-btn">Today</button>
-            <button id="resetAllEntriesBtn" class="filter-btn delete-all-btn" style="color: #ff4444;">Reset All</button>
+            <button onclick="renderHistory(false)" class="filter-btn">All</button>
+            <button onclick="renderHistory(true)" class="filter-btn">Today</button>
+            <button id="resetAllEntriesBtn" class="filter-btn delete-all-btn" style="color: #ff4444;" data-testid="reset-all-btn">Reset All</button>
         </div>
         <ul id="entryList"></ul>
         <div class="total">Total for Project: <span id="totalTime" data-testid="totalTime">0</span> min</div>
@@ -162,19 +163,19 @@
             </div> -->
             <div class="detail-body">
                 <div class="form-group">
-                    <label>Date</label>
+                    <label for="editDate">Date</label>
                     <input type="date" id="editDate">
                 </div>
                 <div class="form-group">
-                    <label>Start Time</label>
+                    <label for="editStartTime">Start Time</label>
                     <input type="time" id="editStartTime">
                 </div>
                 <div class="form-group">
-                    <label>End Time</label>
+                    <label for="editEndTime">End Time</label>
                     <input type="time" id="editEndTime">
                 </div>
                 <div class="form-group">
-                    <label>Notes</label>
+                    <label for="editNotes">Notes</label>
                     <textarea id="editNotes" placeholder="Notes..."></textarea>
                 </div>
                 <div id="editError" class="error-message" style="display:none; color: #ef4444;"></div>
