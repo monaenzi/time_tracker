@@ -43,7 +43,6 @@ app.get(route, (_, res) => {
 // Falls jemand direkt auf die API-Route im Browser geht
 app.get("/", (_, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
-  res.sendFile(path.join(frontendPath, "styles.css"));
 });
 
 app.listen(PORT, () => console.log(timeTracker));
