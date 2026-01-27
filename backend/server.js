@@ -8,7 +8,7 @@ import { readFile } from "fs/promises";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const route = "/api/projects";
 const timeTracker = `Server running on PORT ${PORT}`;
 const filePath = path.join(__dirname, "projects.json");
@@ -17,8 +17,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Statische Dateien aus dem "public" Ordner bereitstellen
-app.use(express.static(path.join(__dirname)));
+// Statische Dateien aus dem "src" Ordner bereitstellen
+app.use(express.static(path.join(__dirname, "..", "src")));
 
 
 app.get(route, (_, res) => {
@@ -41,7 +41,7 @@ app.get(route, (_, res) => {
 
 // Falls jemand direkt auf die API-Route im Browser geht
 app.get("/", (_, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "..", "src", "index.html"));
 });
 
 app.listen(PORT, () => console.log(timeTracker));
