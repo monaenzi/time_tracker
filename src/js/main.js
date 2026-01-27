@@ -210,24 +210,30 @@ function openDetailModal(entry, index) {
 }
 
 function saveEntryEdits() {
+    const newDate = document.getElementById('editDate').value;
     const newStart = document.getElementById('editStartTime').value;
     const newEnd = document.getElementById('editEndTime').value;
+    const newNotes = document.getElementById('editNotes').value;
+    const errorEl = document.getElementById('editError');
 
     if (newStart >= newEnd) {
-        document.getElementById('editError').textContent = "Error: End time must be after start time!";
-        document.getElementById('editError').style.display = 'block';
+        errorEl.textContent = "Error: End time must be after start time!";
+        errorEl.style.display = 'block';
         return;
     }
 
     const entry = timeEntries[currentEditIndex];
-    entry.date = document.getElementById('editDate').value;
+    entry.date = newDate;
     entry.startTime = newStart;
     entry.endTime = newEnd;
-    entry.notes = document.getElementById('editNotes').value;
-    entry.durationMinutes = calculateMinutes(newStart, newEnd); 
+    entry.notes = newNotes;
+    const durationMin = calculateMinutes(newStart, newEnd);
+
+    entry.durationMinutes = durationMin;
+    entry.durationSeconds = durationMin * 60;
 
     localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
-    renderHistory(); 
+    renderHistory();
     closeDetailModal();
 }
 
