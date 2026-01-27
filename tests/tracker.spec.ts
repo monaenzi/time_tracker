@@ -195,6 +195,9 @@ test('Reset all entries for the currently selected project', async ({ page }) =>
   expect(finalStorage[0].projectName).toBe('App Development');
 });
 
+/**
+ * Cannot exceed 600 total minutes for a single project
+ **/
 test('Cannot exceed 600 total minutes for a sinngle project', async ({ page }) => {
   const entries = [
     { 
@@ -218,7 +221,7 @@ test('Cannot exceed 600 total minutes for a sinngle project', async ({ page }) =
   const select = page.locator('#formProjectId');
   await select.selectOption({ label: 'Web Design' });
 
-  await page.locator('#formDate').fill(new Date().toISOString().split('T')[0]);
+  await page.locator('#formDate').fill('2026-01-26');
   await page.locator('#formStartTime').fill('17:00');
   await page.locator('#formEndTime').fill('19:00');
 
@@ -232,3 +235,53 @@ test('Cannot exceed 600 total minutes for a sinngle project', async ({ page }) =
   const finalStorage = await page.evaluate(() => JSON.parse(window.localStorage.getItem('timeEntries') || '[]'));
   expect(finalStorage).toHaveLength(1);
 });
+
+/**
+ * Edit an existing time entry and save changes
+ **/
+test('Edit an existing time entry and save changes', async ({ page }) => {
+  const entryToEdit = {
+    projectid: "1",
+    projectName: 'Web Design',
+    durationMinutes: 60,
+    date: '2026-01-20',
+    startTime: "10:00",
+    endTime: "11:00",
+    notes: "Original Note"
+  };
+
+  await page.addInitScript((data) => {
+    window.localStorage.setItem('timeEntries', JSON.stringify([data]));
+  }, entryToEdit);
+
+  await page.goto('index.html');
+
+  const trigger = page.getByTestId('project-trigger');
+  await trigger.click();
+  await page.getByTestId('projects-list').getByText('Web Design').click();
+
+  const entryItem = page.locator('.entry-main-content');
+  await entryItem.click();
+
+  const modal = page.locator('#detailModal');
+  await expect(modal).toBeVisible();
+  await expect(page.locator('#editNotes')).toHaveValue('Original Note');
+
+  await page.locator('#editEndTime').fill('12:00');
+  await page.locator('#editNotes').fill('Updated Note');
+
+  await page.locator('#saveEditBtn').click();
+
+  await expect(modal).toBeHidden();
+
+  const entryList = page.getByTestId('history-list');
+  await expect(entryList).toContainText('120 min');
+
+  await expect(page.getByTestId('totalTime')).toHaveText('120');
+
+  const finalStorage = await page.evaluate(() => JSON.parse(window.localStorage.getItem('timeEntries') || '[]'));
+  expect(finalStorage[0].durationMinutes).toBe(120);
+  expect(finalStorage[0].notes).toBe('Updated Note');
+  expect(finalStorage[0].endTime).toBe('12:00');
+});
+
