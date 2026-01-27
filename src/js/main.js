@@ -5,23 +5,32 @@ let selectedProjectId = null;
 let timeEntries = JSON.parse(localStorage.getItem('timeEntries')) || [];
 let elapsedTime = 0;
 let selectedProjectName = '';
-
+let currentEditIndex = null;
 
 // ==================== PROJEKT FUNKTIONEN ====================
 
 async function fetchProjects() {
-    const res = await fetch('http://localhost:3000/api/projects');
-    const projects = await res.json();
-    const list = document.getElementById('projectsList');
+    try {
+        const res = await fetch('http://localhost:3000/api/projects');
+        if (!res.ok) {
+            throw new Error(`HTTP Error! Status: ${res.status}`)
+        }
 
-    list.innerHTML = ''; // Liste leeren
-    projects.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'project-item';
-        div.innerHTML = `<span>${p.name}</span>`;
-        div.onclick = () => selectProject(p);
-        list.appendChild(div);
-    });
+        const projects = await res.json();
+        const list = document.getElementById('projectsList');
+
+        list.innerHTML = ''; // Liste leeren
+        projects.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'project-item';
+            div.innerHTML = `<span>${p.name}</span>`;
+            div.onclick = () => selectProject(p);
+            list.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Error while loading project data:', error);
+    }
+
 }
 
 function selectProject(p) {
@@ -117,6 +126,16 @@ function openModal() {
 
 function closeModal() {
     document.getElementById('entryFormModal').style.display = 'none';
+
+    const form = document.getElementById('entryForm');
+    if (form) {
+        form.reset();
+    }
+    
+    const errorEl = document.getElementById('formError');
+    if (errorEl) {
+        errorEl.style.display = 'none';
+    }
 }
 
 async function populateProjectSelect() {
@@ -160,6 +179,21 @@ if (resetAllBtn) {
 }
 
 
+function isOverlapping(date, startTime, endTime, ignoreIndex = null){
+    for (let i = 0; i < timeEntries.length; i++) {
+        if(ignoreIndex !== null && i === ignoreIndex) continue;
+        const existing = timeEntries[i];
+
+        if (existing.date === date) {
+            if (startTime < existing.endTime && endTime > existing.startTime) {
+                return true; 
+            }
+        }
+    }
+    return false; 
+}
+
+
 
 function deleteEntry(index) {
     if (confirm("Are you sure you want to delete this entry?")) {
@@ -169,21 +203,84 @@ function deleteEntry(index) {
     }
 }
 
-function openDetailModal(entry) {
-    document.getElementById('detailProjectName').textContent = entry.projectName || "Project Details";
-    document.getElementById('detailDate').textContent = entry.date;
-    document.getElementById('detailStartTime').textContent = entry.startTime || "--:--";
-    document.getElementById('detailEndTime').textContent = entry.endTime || "--:--";
-    document.getElementById('detailDuration').textContent = entry.durationMinutes;
+// function openDetailModal(entry) {
+//     document.getElementById('detailProjectName').textContent = entry.projectName || "Project Details";
+//     document.getElementById('detailDate').textContent = entry.date;
+//     document.getElementById('detailStartTime').textContent = entry.startTime || "--:--";
+//     document.getElementById('detailEndTime').textContent = entry.endTime || "--:--";
+//     document.getElementById('detailDuration').textContent = entry.durationMinutes;
+    
+//     const notesDisplay = document.getElementById('detailNotes');
+//     notesDisplay.textContent = entry.notes || "No notes for this entry.";
+    
+//     document.getElementById('detailModal').style.display = 'flex';
 
-    const notesDisplay = document.getElementById('detailNotes');
-    notesDisplay.textContent = entry.notes || "No notes for this entry.";
+//     const body = document.querySelector('#detailModal .detail-body');
+//     if (body) body.scrollTop = 0;
+// }
 
+function openDetailModal(entry, index) {
+    currentEditIndex = index;
+    document.getElementById('detailProjectName').textContent = entry.projectName;
+    document.getElementById('editDate').value = entry.date;
+    document.getElementById('editStartTime').value = entry.startTime;
+    document.getElementById('editEndTime').value = entry.endTime;
+    document.getElementById('editNotes').value = entry.notes || "";
     document.getElementById('detailModal').style.display = 'flex';
-
-    const body = document.querySelector('#detailModal .detail-body');
-    if (body) body.scrollTop = 0;
 }
+
+function saveEntryEdits() {
+    const newStart = document.getElementById('editStartTime').value;
+    const newEnd = document.getElementById('editEndTime').value;
+    const newDate = document.getElementById('editDate').value;
+    const errorEl = document.getElementById('editError');
+
+    if (newStart >= newEnd) {
+        document.getElementById('editError').textContent = "Error: End time must be after start time!";
+        document.getElementById('editError').style.display = 'block';
+        return;
+    }
+
+    if(isOverlapping(newDate, newStart, newEnd, currentEditIndex)){
+        errorEl.textContent = "Error: This update overlaps with another entry!";
+        errorEl.style.display = 'block';
+        return;
+    }
+
+
+    const newDuration = calculateMinutes(newStart, newEnd);
+    let dayTotal = 0;
+    const currentEntry = timeEntries[currentEditIndex];
+
+    for (let i = 0; i < timeEntries.length; i++) {
+        if (i !== currentEditIndex && 
+            timeEntries[i].projectid == currentEntry.projectid && 
+            timeEntries[i].date === newDate) {
+            dayTotal += timeEntries[i].durationMinutes;
+        }
+    }
+
+    if (dayTotal + newDuration > 600) {
+        const remaining = 600 - dayTotal;
+        errorEl.textContent = `Limit reached! You already have ${dayTotal} min on this day. You can only set this entry to max ${remaining} min.`;
+        errorEl.style.display = 'block';
+        return;
+    }
+
+
+    const entry = timeEntries[currentEditIndex];
+    entry.date = document.getElementById('editDate').value;
+    entry.startTime = newStart;
+    entry.endTime = newEnd;
+    entry.notes = document.getElementById('editNotes').value;
+    entry.durationMinutes = calculateMinutes(newStart, newEnd); 
+
+    localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+    renderHistory(); 
+    closeDetailModal();
+}
+
+document.getElementById('saveEditBtn').onclick = saveEntryEdits;
 
 function closeDetailModal() {
     document.getElementById('detailModal').style.display = 'none';
@@ -192,6 +289,7 @@ function closeDetailModal() {
 document.getElementById('closeDetailBtn').onclick = closeDetailModal;
 document.getElementById('closeDetailBottomBtn').onclick = closeDetailModal;
 document.getElementById('detailOverlay').onclick = closeDetailModal;
+
 
 function renderHistory(filterToday = false) {
     const list = document.getElementById('entryList');
@@ -235,8 +333,12 @@ function renderHistory(filterToday = false) {
                 </div>
             `;
 
-            li.querySelector('.entry-main-content').onclick = () => openDetailModal(e);
+            // li.querySelector('.entry-main-content').onclick = () => openDetailModal(e);
 
+            li.querySelector('.entry-main-content').onclick = () => {
+                const originalIndex = timeEntries.indexOf(e);
+                openDetailModal(e, originalIndex);
+            };
             li.querySelector('.delete-btn').onclick = () => {
                 event.stopPropagation();
                 const originalIndex = timeEntries.indexOf(e);
@@ -322,7 +424,46 @@ document.getElementById('entryForm').onsubmit = function (e) {
         return;
     }
 
+
+    if (isOverlapping(date, startTimeVal, endTimeVal)) {
+        const msg = "Error: This time slot overlaps with an existing entry!";
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
+
     const duration = calculateMinutes(startTimeVal, endTimeVal);
+
+
+
+    let currentTotal = 0;
+    for (let i = 0; i < timeEntries.length; i++) {
+        if (timeEntries[i].projectid == select.value && timeEntries[i].date === date) {
+            currentTotal += timeEntries[i].durationMinutes;
+        }
+    }
+
+    
+    if (currentTotal + duration > 600) {
+        const remaining = 600 - currentTotal;
+        const msg = `Limit reached! You have already recorded ${currentTotal} min on ${date}. You can only add ${remaining > 0 ? remaining : 0} more minutes (Max 600 per day).`;
+        
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
 
     const entry = {
         projectid: select.value,
@@ -341,6 +482,26 @@ document.getElementById('entryForm').onsubmit = function (e) {
     this.reset();
     closeModal();
 };
+
+function deleteEntryFromModal() {
+    if (currentEditIndex !== null) {
+        if (confirm("Are you sure you want to delete this entry?")) {
+            timeEntries.splice(currentEditIndex, 1);
+            
+            localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+            
+            renderHistory();
+            closeDetailModal();
+            
+            currentEditIndex = null;
+        }
+    }
+}
+
+const deleteBtnModal = document.getElementById('deleteEntryBtn');
+if (deleteBtnModal) {
+    deleteBtnModal.onclick = deleteEntryFromModal;
+}
 
 fetchProjects();
 renderHistory();

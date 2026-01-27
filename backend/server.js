@@ -12,13 +12,14 @@ const PORT = 3000;
 const route = "/api/projects";
 const timeTracker = `Server running on PORT ${PORT}`;
 const filePath = path.join(__dirname, "projects.json");
+const frontendPath = path.join(__dirname, "..", "src");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 // Statische Dateien aus dem "public" Ordner bereitstellen
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(frontendPath));
 
 
 app.get(route, (_, res) => {
@@ -41,7 +42,9 @@ app.get(route, (_, res) => {
 
 // Falls jemand direkt auf die API-Route im Browser geht
 app.get("/", (_, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
 app.listen(PORT, () => console.log(timeTracker));
+
+console.log("Project started at http://localhost:3000");

@@ -5,6 +5,8 @@ Projects are loaded from a static JSON file, while time entries are stored local
 
 ## Features
 
+### Sprint 1
+
 - Select a project and start/stop time tracking
 
 - Only one active timer at a time
@@ -20,6 +22,18 @@ Projects are loaded from a static JSON file, while time entries are stored local
   - Time per project (today)
 
   - Total time worked today
+
+### Sprint 2
+
+- Open detailed view of time entry
+
+- Reset all entries in a project
+
+- View all entries from today/this week/this month
+
+- Edit time entries
+
+- Dark and lightmode
 
 ## Tech Stack
 
@@ -60,8 +74,6 @@ npm run dev
 ```
 
 ### 4. Open http://localhost:3000 in your browser to view the time tracker
-
-(The port may vary — check the terminal output.)
 
 ## Technical Overview
 
@@ -133,3 +145,44 @@ npm run dev
 - No team features
 
 - No server-side storage for time entries
+
+
+## Tests
+
+### How to test
+
+#### Start the server
+
+`npm run dev`
+
+#### Open test UI
+
+`npm run testui`
+
+#### Run tests
+
+Tests can be run individually while also looking at what the test does in the mini-test-browser
+
+### What is getting tested
+
+ 1. Test to see if project are being loaded correctly from the server and then displayed
+
+ 2. Test to see if Timer can be started and stopped
+
+ 3. Test to see if time entries are being stored in local storage and persistent after reload
+
+ 4. Test to see if time entry gets deleted and total time gets updated
+
+ 5. Test to see if 'Reset All' deletes every time entry in a project
+
+ 6. Test to see if the time limit of 10 hours a day is getting caught correctly
+
+ 7. Test to see if editing a time entry gets saved correctly
+
+## Still open features, problems and limitations
+
+### Still open features
+
+#### Multi-Layer-Navigation
+
+Wasn't necessary because our time tracker operates one one single page

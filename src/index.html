@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Tracker</title>
     <link rel="stylesheet" href="style.css">
+      <link rel="icon" type="image/x-icon" href="./assets/icons/icons8-clock-48.png">
     <script src="js/main.js" defer></script>
 </head>
 
@@ -71,7 +72,7 @@
         <div class="filter-controls">
             <button onclick="renderHistory(false)" class="filter-btn">All</button>
             <button onclick="renderHistory(true)" class="filter-btn">Today</button>
-            <button id="resetAllEntriesBtn" class="filter-btn delete-all-btn" style="color: #ff4444;">Reset All</button>
+            <button id="resetAllEntriesBtn" class="filter-btn delete-all-btn" style="color: #ff4444;" data-testid="reset-all-btn">Reset All</button>
         </div>
         <ul id="entryList"></ul>
         <div class="total">Total for Project: <span id="totalTime" data-testid="totalTime">0</span> min</div>
@@ -129,7 +130,7 @@
                 <h3 id="detailProjectName">Project Details</h3>
                 <button id="closeDetailBtn" class="close-btn">✕</button>
             </div>
-            <div class="detail-body">
+            <!-- <div class="detail-body">
                 <p><strong>Date:</strong> <span id="detailDate"></span></p>
                 <p><strong>Time:</strong> <span id="detailStartTime"></span> - <span id="detailEndTime"></span></p>
                 <p><strong>Duration:</strong> <span id="detailDuration"></span> minutes</p>
@@ -137,7 +138,30 @@
                     <strong>Notes:</strong>
                     <div id="detailNotes" class="notes-display"></div>
                 </div>
+            </div> -->
+            <div class="detail-body">
+                <div class="form-group">
+                    <label for="editDate">Date</label>
+                    <input type="date" id="editDate">
+                </div>
+                <div class="form-group">
+                    <label for="editStartTime">Start Time</label>
+                    <input type="time" id="editStartTime">
+                </div>
+                <div class="form-group">
+                    <label for="editEndTime">End Time</label>
+                    <input type="time" id="editEndTime">
+                </div>
+                <div class="form-group">
+                    <label for="editNotes">Notes</label>
+                    <textarea id="editNotes" placeholder="Notes..."></textarea>
+                </div>
+                <div id="editError" class="error-message" style="display:none; color: #ef4444;"></div>
             </div>
+            <div class="form-actions">
+                <button type="button" id="saveEditBtn" class="btn-base btn-primary">Save Changes</button>
+                <button type="button" id="deleteEntryBtn" class="btn-base" style="background-color: #ff4444; color: white;">Delete Entry</button>            </div>
+
             <div class="form-actions">
                 <button type="button" id="closeDetailBottomBtn" class="btn-base btn-primary">Close</button>
             </div>
