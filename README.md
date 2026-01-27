@@ -100,14 +100,13 @@ npm run dev
 - Each time entry contains at least:
 
 ```json
-{
-  "projectId": "string",
-  "date": "YYYY-MM-DD",
-  "startTime": "HH:mm",
-  "endTime": "HH:mm",
-  "durationMinutes": 42,
-  "note": "optional text"
-}
+"projectid": "selectedProjectId",
+"projectName": "selectedProjectName",
+"date": "new Date().toISOString().split('T')[0]",
+"startTime": "formatTime(startedAt)",
+"endTime": "formatTime(now)",
+"durationMinutes": "duration",
+"notes": "''"
 ```
 
 ## UI & Functionality
