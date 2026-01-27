@@ -100,14 +100,13 @@ npm run dev
 - Each time entry contains at least:
 
 ```json
-{
-  "projectId": "string",
-  "date": "YYYY-MM-DD",
-  "startTime": "HH:mm",
-  "endTime": "HH:mm",
-  "durationMinutes": 42,
-  "note": "optional text"
-}
+"projectid": "selectedProjectId",
+"projectName": "selectedProjectName",
+"date": "new Date().toISOString().split('T')[0]",
+"startTime": "formatTime(startedAt)",
+"endTime": "formatTime(now)",
+"durationMinutes": "duration",
+"notes": "''"
 ```
 
 ## UI & Functionality
@@ -155,8 +154,10 @@ npm run dev
 
 `npm run dev`
 
-#### Open test UI
+#### Start tests or open test UI
 
+`npm run test`
+or
 `npm run testui`
 
 #### Run tests
@@ -175,9 +176,7 @@ Tests can be run individually while also looking at what the test does in the mi
 
  5. Test to see if 'Reset All' deletes every time entry in a project
 
- 6. Test to see if the time limit of 10 hours a day is getting caught correctly
-
- 7. Test to see if editing a time entry gets saved correctly
+ 6. Test to see if editing a time entry gets saved correctly
 
 ## Still open features, problems and limitations
 
@@ -186,3 +185,11 @@ Tests can be run individually while also looking at what the test does in the mi
 #### Multi-Layer-Navigation
 
 Wasn't necessary because our time tracker operates one one single page
+
+### Problems and limitations
+
+- Time management/reaching deadlines in time
+
+- different understanding of what a feature should do - more communication needed
+
+

@@ -7,6 +7,15 @@ let elapsedTime = 0;
 let selectedProjectName = '';
 let currentEditIndex = null;
 
+// ==================== GLOBAL EVENT LISTENERS ====================
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeModal();
+        closeDetailModal();
+    }
+})
+
 // ==================== PROJEKT FUNKTIONEN ====================
 
 async function fetchProjects() {
@@ -131,7 +140,7 @@ function closeModal() {
     if (form) {
         form.reset();
     }
-    
+
     const errorEl = document.getElementById('formError');
     if (errorEl) {
         errorEl.style.display = 'none';
@@ -179,18 +188,18 @@ if (resetAllBtn) {
 }
 
 
-function isOverlapping(date, startTime, endTime, ignoreIndex = null){
+function isOverlapping(date, startTime, endTime, ignoreIndex = null) {
     for (let i = 0; i < timeEntries.length; i++) {
-        if(ignoreIndex !== null && i === ignoreIndex) continue;
+        if (ignoreIndex !== null && i === ignoreIndex) continue;
         const existing = timeEntries[i];
 
         if (existing.date === date) {
             if (startTime < existing.endTime && endTime > existing.startTime) {
-                return true; 
+                return true;
             }
         }
     }
-    return false; 
+    return false;
 }
 
 
@@ -209,10 +218,10 @@ function deleteEntry(index) {
 //     document.getElementById('detailStartTime').textContent = entry.startTime || "--:--";
 //     document.getElementById('detailEndTime').textContent = entry.endTime || "--:--";
 //     document.getElementById('detailDuration').textContent = entry.durationMinutes;
-    
+
 //     const notesDisplay = document.getElementById('detailNotes');
 //     notesDisplay.textContent = entry.notes || "No notes for this entry.";
-    
+
 //     document.getElementById('detailModal').style.display = 'flex';
 
 //     const body = document.querySelector('#detailModal .detail-body');
@@ -241,7 +250,7 @@ function saveEntryEdits() {
         return;
     }
 
-    if(isOverlapping(newDate, newStart, newEnd, currentEditIndex)){
+    if (isOverlapping(newDate, newStart, newEnd, currentEditIndex)) {
         errorEl.textContent = "Error: This update overlaps with another entry!";
         errorEl.style.display = 'block';
         return;
@@ -253,8 +262,8 @@ function saveEntryEdits() {
     const currentEntry = timeEntries[currentEditIndex];
 
     for (let i = 0; i < timeEntries.length; i++) {
-        if (i !== currentEditIndex && 
-            timeEntries[i].projectid == currentEntry.projectid && 
+        if (i !== currentEditIndex &&
+            timeEntries[i].projectid == currentEntry.projectid &&
             timeEntries[i].date === newDate) {
             dayTotal += timeEntries[i].durationMinutes;
         }
@@ -273,10 +282,10 @@ function saveEntryEdits() {
     entry.startTime = newStart;
     entry.endTime = newEnd;
     entry.notes = document.getElementById('editNotes').value;
-    entry.durationMinutes = calculateMinutes(newStart, newEnd); 
+    entry.durationMinutes = calculateMinutes(newStart, newEnd);
 
     localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
-    renderHistory(); 
+    renderHistory();
     closeDetailModal();
 }
 
@@ -433,7 +442,7 @@ document.getElementById('entryForm').onsubmit = function (e) {
         } else {
             alert(msg);
         }
-        return; 
+        return;
     }
 
 
@@ -449,18 +458,18 @@ document.getElementById('entryForm').onsubmit = function (e) {
         }
     }
 
-    
+
     if (currentTotal + duration > 600) {
         const remaining = 600 - currentTotal;
         const msg = `Limit reached! You have already recorded ${currentTotal} min on ${date}. You can only add ${remaining > 0 ? remaining : 0} more minutes (Max 600 per day).`;
-        
+
         if (errorEl) {
             errorEl.textContent = msg;
             errorEl.style.display = 'block';
         } else {
             alert(msg);
         }
-        return; 
+        return;
     }
 
 
@@ -487,12 +496,12 @@ function deleteEntryFromModal() {
     if (currentEditIndex !== null) {
         if (confirm("Are you sure you want to delete this entry?")) {
             timeEntries.splice(currentEditIndex, 1);
-            
+
             localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
-            
+
             renderHistory();
             closeDetailModal();
-            
+
             currentEditIndex = null;
         }
     }
