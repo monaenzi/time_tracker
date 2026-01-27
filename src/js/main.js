@@ -10,18 +10,27 @@ let currentEditIndex = null;
 // ==================== PROJEKT FUNKTIONEN ====================
 
 async function fetchProjects() {
-    const res = await fetch('http://localhost:3000/api/projects');
-    const projects = await res.json();
-    const list = document.getElementById('projectsList');
+    try {
+        const res = await fetch('http://localhost:3000/api/projects');
+        if (!res.ok) {
+            throw new Error(`HTTP Error! Status: ${res.status}`)
+        }
 
-    list.innerHTML = ''; // Liste leeren
-    projects.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'project-item';
-        div.innerHTML = `<span>${p.name}</span>`;
-        div.onclick = () => selectProject(p);
-        list.appendChild(div);
-    });
+        const projects = await res.json();
+        const list = document.getElementById('projectsList');
+
+        list.innerHTML = ''; // Liste leeren
+        projects.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'project-item';
+            div.innerHTML = `<span>${p.name}</span>`;
+            div.onclick = () => selectProject(p);
+            list.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Error while loading project data:', error);
+    }
+
 }
 
 function selectProject(p) {
@@ -108,11 +117,11 @@ function updateUI() {
 function calculateMinutes(start, end) {
     const [startH, startM] = start.split(':').map(Number);
     const [endH, endM] = end.split(':').map(Number);
-    
+
     let diff = (endH * 60 + endM) - (startH * 60 + startM);
-    
-    if (diff < 0) diff += 24 * 60; 
-    
+
+    if (diff < 0) diff += 24 * 60;
+
     return diff;
 }
 
@@ -131,6 +140,16 @@ function openModal() {
 
 function closeModal() {
     document.getElementById('entryFormModal').style.display = 'none';
+
+    const form = document.getElementById('entryForm');
+    if (form) {
+        form.reset();
+    }
+    
+    const errorEl = document.getElementById('formError');
+    if (errorEl) {
+        errorEl.style.display = 'none';
+    }
 }
 
 async function populateProjectSelect() {
@@ -156,14 +175,14 @@ function resetAllEntries() {
     }
 
     const confirmation = confirm(`Are you sure you want to delete all entries for the project "${selectedProjectName}"?`);
-    
+
     if (confirmation) {
         timeEntries = timeEntries.filter(e => e.projectid != selectedProjectId);
-        
+
         localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
 
         renderHistory();
-        
+
         alert(`All entries for "${selectedProjectName}" have been deleted.`);
     }
 }
@@ -171,6 +190,21 @@ function resetAllEntries() {
 const resetAllBtn = document.getElementById('resetAllEntriesBtn');
 if (resetAllBtn) {
     resetAllBtn.onclick = resetAllEntries;
+}
+
+
+function isOverlapping(date, startTime, endTime, ignoreIndex = null){
+    for (let i = 0; i < timeEntries.length; i++) {
+        if(ignoreIndex !== null && i === ignoreIndex) continue;
+        const existing = timeEntries[i];
+
+        if (existing.date === date) {
+            if (startTime < existing.endTime && endTime > existing.startTime) {
+                return true; 
+            }
+        }
+    }
+    return false; 
 }
 
 
@@ -218,6 +252,12 @@ function saveEntryEdits() {
 
     if (newStart >= newEnd) {
         errorEl.textContent = "Error: End time must be after start time!";
+        errorEl.style.display = 'block';
+        return;
+    }
+
+    if(isOverlapping(newDate, newStart, newEnd, currentEditIndex)){
+        errorEl.textContent = "Error: This update overlaps with another entry!";
         errorEl.style.display = 'block';
         return;
     }
@@ -384,8 +424,46 @@ document.getElementById('entryForm').onsubmit = function (e) {
         return;
     }
 
-    const durationMin = calculateMinutes(startTimeVal, endTimeVal);
-    const durationSec = durationMin * 60;
+
+    if (isOverlapping(date, startTimeVal, endTimeVal)) {
+        const msg = "Error: This time slot overlaps with an existing entry!";
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
+
+    const duration = calculateMinutes(startTimeVal, endTimeVal);
+
+
+
+    let currentTotal = 0;
+    for (let i = 0; i < timeEntries.length; i++) {
+        if (timeEntries[i].projectid == select.value && timeEntries[i].date === date) {
+            currentTotal += timeEntries[i].durationMinutes;
+        }
+    }
+
+    
+    if (currentTotal + duration > 600) {
+        const remaining = 600 - currentTotal;
+        const msg = `Limit reached! You have already recorded ${currentTotal} min on ${date}. You can only add ${remaining > 0 ? remaining : 0} more minutes (Max 600 per day).`;
+        
+        if (errorEl) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        } else {
+            alert(msg);
+        }
+        return; 
+    }
+
+
 
     const entry = {
         projectid: select.value,
@@ -428,3 +506,14 @@ if (deleteBtnModal) {
 
 fetchProjects();
 renderHistory();
+
+// ==================== THEME SWITCHER ====================
+
+function switchTheme() {
+    const themeSwitchbtn = document.getElementById('theme-btn');
+    themeSwitchbtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+    })
+}
+
+switchTheme();
