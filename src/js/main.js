@@ -471,8 +471,8 @@ document.getElementById('entryForm').onsubmit = function (e) {
         date: date,
         startTime: startTimeVal,
         endTime: endTimeVal,
-        durationMinutes: durationMin,
-        durationSeconds: durationSec,
+        durationMinutes: duration,
+        durationSeconds: duration * 60,
         notes: notes
     };
 
